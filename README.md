@@ -202,8 +202,8 @@ I am actively seeking:
 If your institution works with EMG data and needs a reproducible, open pipeline – **let’s talk.**
 
 📧 adlbiqussai@gmail.com  
-🔗 [linkedin.com/in/qussai-adlbi-99aa05385](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
-🐙 [github.com/Qussai-BME/emg-analysis-engine](https://github.com/Qussai-BME/emg-analysis-engine)  
+🔗 [linkedin](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
+🐙 [github](https://github.com/Qussai-BME)  
 🏫 Al‑Andalus University / Pázmány Péter Catholic University
 
 ---
