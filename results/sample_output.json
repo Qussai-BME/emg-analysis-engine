@@ -1,1 +1,33 @@
-{} 
+{
+  "metadata": {
+    "timestamp": "2026-03-04T12:00:00",
+    "sampling_rate": 2000,
+    "window_size": 200,
+    "overlap": 0.5,
+    "filter_config": {
+      "sampling_rate": 2000,
+      "cutoff_low": 20.0,
+      "cutoff_high": 450.0,
+      "filter_order": 4,
+      "notch_freq": 50.0,
+      "window_size": 200,
+      "overlap": 0.5
+    }
+  },
+  "signal_quality": {
+    "mean_snr": 24.7,
+    "artifact_detected": false
+  },
+  "time_series": {
+    "timestamps": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45],
+    "features": [
+      {"MAV": 0.142, "RMS": 0.198, "ZCR": 87, "WL": 14.3, "SSC": 134, "SNR_estimate": 24.7, "signal_power": 0.039},
+      {"MAV": 0.151, "RMS": 0.211, "ZCR": 85, "WL": 15.1, "SSC": 129, "SNR_estimate": 25.1, "signal_power": 0.045}
+    ]
+  },
+  "summary_statistics": {
+    "mean_activation": 0.147,
+    "peak_activation": 0.211,
+    "fatigue_index": 0.023
+  }
+}

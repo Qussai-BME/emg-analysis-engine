@@ -1,1 +1,6 @@
-sampling_rate,amplitude 
+import numpy as np
+import pandas as pd
+np.random.seed(42)
+signal = np.random.normal(0, 0.1, 1000)
+pd.DataFrame({'amplitude': signal}).to_csv('data/sample_emg.csv', index=False)
+print("✅ sample_emg.csv created")
