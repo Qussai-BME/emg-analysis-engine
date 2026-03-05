@@ -1,8 +1,8 @@
 # EMG Analysis Engine — Module A  
 ### A modular, clinically‑informed foundation for EMG signal processing  
 
-**GitHub Repository:** [github.com/Qussai-BME/emg-analysis-engine](https://github.com/Qussai-BME/emg-analysis-engine)  
-**Live App:** [emg-analysis-engine-qussai-adlbi.streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
+**GitHub Repository:** [Github](https://github.com/Qussai-BME/emg-analysis-engine)  
+**Live App:** [Streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
 **Author:** Qussai Adlbi ([LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385))  
 **Contact:** adlbiqussai@gmail.com  
 **Institution:** Al‑Andalus University · Pázmány Péter Catholic University  
@@ -94,13 +94,15 @@ emg-analysis-engine/
 
 ## 📸 Screenshots
 
+## 📸 Screenshots
+
 ### Main Dashboard
-![Main Dashboard](docs/images/screenshot1.png)
-*Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
+[![Main Dashboard](docs/images/screenshot1.png)](docs/images/screenshot1.png)
+*Click image to view full size • Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
 
 ### Feature Extraction & Spectral Analysis
-![Feature Extraction](docs/images/screenshot2.png)
-*Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
+[![Feature Extraction](docs/images/screenshot2.png)](docs/images/screenshot2.png)
+*Click image to view full size • Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
 
 ---
 
@@ -224,8 +226,8 @@ I am actively seeking:
 If your institution works with EMG data and needs a reproducible, open pipeline – **let's talk.**
 
 📧 adlbiqussai@gmail.com  
-🔗 [linkedin.com/in/qussai-adlbi-99aa05385](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
-🐙 [github.com/Qussai-BME](https://github.com/Qussai-BME)  
+🔗 [linkedin](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
+🐙 [github](https://github.com/Qussai-BME)  
 🏫 Al‑Andalus University / Pázmány Péter Catholic University
 
 ---
