@@ -1,8 +1,8 @@
 # EMG Analysis Engine — Module A  
 ### A modular, clinically‑informed foundation for EMG signal processing  
 
-**GitHub Repository:** [https://github.com/Qussai-BME/emg-analysis-engine](https://github.com/Qussai-BME/emg-analysis-engine)  
-**Live App:** [https://emg-analysis-engine.streamlit.app](https://emg-analysis-engine.streamlit.app)  
+**GitHub Repository:** [github](https://github.com/Qussai-BME/emg-analysis-engine)  
+**Live App:** [streamlit](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
 **Author:** Qussai Adlbi ([LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385))  
 **Contact:** adlbiqussai@gmail.com  
 **Institution:** Al‑Andalus University · Pázmány Péter Catholic University  

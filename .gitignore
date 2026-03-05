@@ -1,11 +1,17 @@
-# Python
-__pycache__/
-*.pyc
 venv/
-env/
+__pycache__/
 *.log
-*.json
+emg_engine.log
 results/
 data/
+notebooks/
+.DS_Store
+Thumbs.db
+venv/
+__pycache__/
+*.log
+emg_engine.log
+data/
+notebooks/
 .DS_Store
 Thumbs.db
