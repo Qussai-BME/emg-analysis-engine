@@ -94,14 +94,12 @@ emg-analysis-engine/
 
 ## 📸 Screenshots
 
-## 📸 Screenshots
-
 ### Main Dashboard
-[![Main Dashboard](docs/images/screenshot1.png)](docs/images/screenshot1.png)
+[![Main Dashboard](docs/images/Screenshot1.png)](docs/images/Screenshot1.png)
 *Click image to view full size • Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
 
 ### Feature Extraction & Spectral Analysis
-[![Feature Extraction](docs/images/screenshot2.png)](docs/images/screenshot2.png)
+[![Feature Extraction](docs/images/Screenshot2.png)](docs/images/Screenshot2.png)
 *Click image to view full size • Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
 
 ---
