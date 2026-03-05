@@ -1,8 +1,8 @@
 # EMG Analysis Engine — Module A  
 ### A modular, clinically‑informed foundation for EMG signal processing  
 
-**GitHub Repository:** [github](https://github.com/Qussai-BME/emg-analysis-engine)  
-**Live App:** [streamlit](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
+**GitHub Repository:** [github.com/Qussai-BME/emg-analysis-engine](https://github.com/Qussai-BME/emg-analysis-engine)  
+**Live App:** [emg-analysis-engine-qussai-adlbi.streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
 **Author:** Qussai Adlbi ([LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385))  
 **Contact:** adlbiqussai@gmail.com  
 **Institution:** Al‑Andalus University · Pázmány Péter Catholic University  
@@ -45,7 +45,7 @@ Interactive Streamlit dashboard + standardized JSON.
 *Ready for visual inspection and integration with future modules (B, C).*
 
 > ✅ **Current status:** Module A (signal processing & feature extraction) is complete and validated on synthetic + open datasets.  
-> 🚧 **In progress:** Module B (gait analysis / classification) – preliminary accuracy ~88–92% on public EMG data (see [Limitations]).
+> 🚧 **In progress:** Module B (gait analysis / classification) – preliminary accuracy ~88–92% on public EMG data (see [Limitations](#limitations)).
 
 ---
 
@@ -56,31 +56,51 @@ The project follows a clean, modular structure that separates core logic, user i
 ```
 emg-analysis-engine/
 │
-├── src/                           # Source code directory
-│   ├── app.py                     # Streamlit dashboard (entry point)
-│   └── core_engine.py             # IEEE‑grade filtering, feature extraction
+├── src/                               # Source code directory
+│   ├── app.py                         # Streamlit dashboard (entry point)
+│   └── core_engine.py                 # IEEE‑grade filtering, feature extraction
 │
-├── results/                        # Pre‑computed outputs for reference
-│   └── example_output.json         # JSON output from a typical run
+├── results/                            # Pre‑computed outputs for reference
+│   ├── example_output.json             # JSON output from a typical run
+│   └── sample_output.json              # Additional sample output for testing
 │
-├── data/                           # Example data and documentation
-│   └── sample_emg.csv              # 3‑second synthetic EMG for quick testing
+├── data/                               # Example data and documentation
+│   ├── sample_emg.csv                  # 3‑second synthetic EMG for quick testing
+│   └── README.md                       # Description of data formats and sources
 │
-├── docs/                           # Additional documentation
-│   └── README.md                   # Documentation index (coming soon)
+├── docs/                               # Documentation and screenshots
+│   ├── images/                         # Screenshots for README and documentation
+│   │   ├── screenshot1.png              # Main dashboard view
+│   │   └── screenshot2.png              # Feature extraction / spectral analysis view
+│   └── README.md                        # Documentation index (coming soon)
 │
-├── notebooks/                       # Jupyter notebooks for exploration
+├── notebooks/                           # Jupyter notebooks for exploration
+│   └── demo_analysis.ipynb              # Step‑by‑step walkthrough of the pipeline
 │
-├── requirements.txt                # One‑click dependency installation
-├── .gitignore                       # Git ignore rules
-└── README.md                       # You are here
+├── requirements.txt                    # One‑click dependency installation
+├── .gitignore                           # Git ignore rules
+└── README.md                           # You are here
 ```
 
 **Why this structure?**  
 - **src/** keeps all source code in one place — clean and professional.  
-- **results/** provides immediate insight into output format without running code.  
-- **data/** and **notebooks/** bridge the gap between research and development.  
-- **docs/** prepares the project for future ISO 13485 documentation requirements.
+- **results/** provides multiple output examples for immediate insight into expected formats.  
+- **data/** includes its own README for clarity on dataset formats and usage.  
+- **docs/images/** stores screenshots for clear visual documentation.  
+- **notebooks/** includes a demo notebook for interactive exploration and education.  
+- Every directory serves a purpose — nothing is arbitrary.
+
+---
+
+## 📸 Screenshots
+
+### Main Dashboard
+![Main Dashboard](docs/images/screenshot1.png)
+*Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
+
+### Feature Extraction & Spectral Analysis
+![Feature Extraction](docs/images/screenshot2.png)
+*Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
 
 ---
 
@@ -133,7 +153,7 @@ Network URL: http://192.168.x.x:8501
 - **Processing speed** – <200 ms for a 5‑second signal @ 2000 Hz  
 - **Preliminary classification accuracy** – 88–92% on public EMG datasets (subject‑dependent)  
 
-> ⚠️ *These numbers are research‑grade, not clinical claims. See [Limitations].*
+> ⚠️ *These numbers are research‑grade, not clinical claims. See [Limitations](#limitations).*
 
 ---
 
@@ -198,14 +218,14 @@ This is **Module A** of a three‑module ecosystem designed for surgical robotic
 I am actively seeking:
 - **Research collaborators** – biomedical engineering, neurology, rehabilitation medicine.
 - **Academic partners** – for clinical dataset access and IRB‑approved validation.
-- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon.
+- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon, Erasmus Mundus.
 - **Institutional pilots** – with rehabilitation centres or prosthetics labs.
 
 If your institution works with EMG data and needs a reproducible, open pipeline – **let's talk.**
 
 📧 adlbiqussai@gmail.com  
-🔗 [linkedin](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
-🐙 [github](https://github.com/Qussai-BME)  
+🔗 [linkedin.com/in/qussai-adlbi-99aa05385](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
+🐙 [github.com/Qussai-BME](https://github.com/Qussai-BME)  
 🏫 Al‑Andalus University / Pázmány Péter Catholic University
 
 ---
