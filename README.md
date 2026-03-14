@@ -10,7 +10,7 @@
 **Python Version:** 3.10 · **License:** MIT · **ISO 13485 Concepts**  
 
 **📄 Cite this work:**  
-[DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18965272.svg)  
+[DOI](https://doi.org/10.5281/zenodo.18965272)  
 *Read the full paper on Zenodo*
 
 ---
