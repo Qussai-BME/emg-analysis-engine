@@ -7,7 +7,11 @@
 **Contact:** adlbiqussai@gmail.com  
 **Institution:** Al‑Andalus University · Pázmány Péter Catholic University  
 
-**Python Version:** 3.10 · **License:** MIT · **ISO 13485 Concepts**
+**Python Version:** 3.10 · **License:** MIT · **ISO 13485 Concepts**  
+
+**📄 Cite this work:**  
+[DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18965272.svg)  
+*Read the full paper on Zenodo*
 
 ---
 
@@ -43,9 +47,6 @@ MAV, RMS, ZCR, WL, SSC extracted using a sliding window (50% overlap).
 **5. 📈 Output**  
 Interactive Streamlit dashboard + standardized JSON.  
 *Ready for visual inspection and integration with future modules (B, C).*
-
-> ✅ **Current status:** Module A (signal processing & feature extraction) is complete and validated on synthetic + open datasets.  
-> 🚧 **In progress:** Module B (gait analysis / classification) – preliminary accuracy ~88–92% on public EMG data (see [Limitations](#limitations)).
 
 ---
 
@@ -95,12 +96,32 @@ emg-analysis-engine/
 ## 📸 Screenshots
 
 ### Main Dashboard
-[![Main Dashboard](docs/images/Screenshot1.png)](docs/images/Screenshot1.png)
+[Main Dashboard](docs/images/Screenshot1.png)
 *Click image to view full size • Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
 
 ### Feature Extraction & Spectral Analysis
-[![Feature Extraction](docs/images/Screenshot2.png)](docs/images/Screenshot2.png)
+[Feature Extraction](docs/images/Screenshot2.png)
 *Click image to view full size • Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
+
+---
+
+## 🧪 What Surprised Me (Hard Lessons from Real Development)
+
+This project taught me more than signal processing — it taught me how easily assumptions break when they meet real data. Here are the four most valuable surprises:
+
+1. **50Hz noise is not guaranteed.**  
+   I initially hardcoded a notch filter for every signal. Then I processed battery‑powered recordings — no 50Hz peak. Applying a notch filter when no interference exists *distorts* the signal. Now the engine checks the PSD first; it only applies the notch if a peak is detected. This small change preserves signal integrity in clean recordings.
+
+2. **Window size is a clinical decision, not a parameter.**  
+   A 100 ms window reacts fast but produces jittery features; 200 ms stabilises the estimates but loses temporal resolution. There is no “correct” number — it depends on whether you are controlling a prosthetic (need speed) or diagnosing fatigue (need stability). I learned to expose this trade‑off transparently, not hide it behind a default.
+
+3. **Data leakage kills generalisation.**  
+   Early classification tests hit 95% accuracy. Then I switched to Leave‑One‑Subject‑Out validation — accuracy dropped to 82%. Why? Because random split puts parts of the same subject in both train and test sets. The model was memorising, not learning. Real‑world generalisation requires subject‑wise separation. This is now part of every future module’s validation protocol.
+
+4. **Cloud deployment forces brutal honesty about resources.**  
+   Streamlit Cloud gives you 1 GB RAM. A 500,000‑sample EMG file — together with filtered copies, feature arrays, and Plotly figures — exceeds that limit. The app would crash silently. I had to implement smart downsampling for visualisation, file size checks, and graceful degradation. Engineering for deployment is as important as engineering for accuracy.
+
+These lessons are now baked into the architecture. They are why the engine handles real data, not just synthetic examples.
 
 ---
 
@@ -153,24 +174,43 @@ Network URL: http://192.168.x.x:8501
 - **Processing speed** – <200 ms for a 5‑second signal @ 2000 Hz  
 - **Preliminary classification accuracy** – 88–92% on public EMG datasets (subject‑dependent)  
 
-> ⚠️ *These numbers are research‑grade, not clinical claims. See [Limitations](#limitations).*
+> ⚠️ *These numbers are research‑grade, not clinical claims. See [Limitations].*
 
 ---
 
 ## 🧭 Roadmap – what's next
 
-This is **Module A** of a three‑module ecosystem designed for surgical robotics.
+This is **Module A** of a three‑module ecosystem designed for surgical robotics. The roadmap has evolved based on real‑world needs:
 
-**Near‑term (Module A hardening)**
-- [ ] Intelligent error handling (human‑readable messages)
-- [ ] Semantic output layer (e.g. "moderate activation" instead of raw RMS)
-- [ ] Unified JSON schema (finalised for Modules B/C)
-- [ ] Performance benchmarking (speed, memory, accuracy)
+### Near‑term (Module A enhancements)
+- [x] Intelligent error handling (basic version implemented – human‑readable messages)
+- [x] Semantic output layer (implemented – e.g., "moderate activation")
+- [x] Unified JSON schema (draft ready; to be finalised with Modules B/C)
+- [ ] Performance benchmarking (automated speed, memory, accuracy measurement)
+- [ ] Adaptive noise floor estimation (replace fixed σ_noise = 0.01)
+- [ ] Multi‑channel support
 
-**Medium‑term**
-- **Module B** – Gait analysis integration (EMG + force plates)
-- **Module C** – Surgical robot interface (real‑time EMG → control signal)
-- **Database layer** – SQLite / PostgreSQL for longitudinal tracking
+### Medium‑term
+- **Module A2 – MyoControl Lite**  
+  Gesture classification (6 hand movements) using Ninapro DB1 dataset, with PSD‑based adaptive notch filtering, gold‑standard features, and Leave‑One‑Subject‑Out SVM validation. Will be released as a separate Streamlit tab.
+- **Module B – Gait analysis integration**  
+  EMG + IMU fusion to compute joint angles and detect gait phases (stance/swing). Will be released as a separate tab in the same dashboard.
+- **Module C – Surgical robot interface**  
+  Real‑time EMG → velocity control of a UR5 arm in PyBullet, using exponential smoothing to avoid jerky motion.
+- **Module D – AI‑enhanced control**  
+  Adaptive gain based on fatigue estimation and an 8‑12 Hz tremor filter to stabilise prosthetic commands.
+- **Database layer** – SQLite / PostgreSQL for longitudinal patient tracking.
+
+### side projects
+- **EMG Game Controller** – pygame integration for interactive demonstrations.
+- **ECG Stress Detector** – heart rate variability analysis using neurokit2.
+- **RC Car via EMG** – Arduino + serial control.
+- **Gesture Recognition API** – FastAPI wrapper for the classifier.
+
+### Long‑term
+- **Data‑Fusion Hub**  
+  A cloud‑based platform that aggregates EMG, gait, and robotic telemetry into a unified schema, enabling large‑scale studies and personalised ML models.
+
 
 ---
 
@@ -213,12 +253,36 @@ This is **Module A** of a three‑module ecosystem designed for surgical robotic
 
 ---
 
+## 📄 Cite this work
+
+If you use this project in your research, please cite the Zenodo record:
+
+> Qussai Adlbi. (2026). EMG Analysis Engine — Module A: An open‑source, IEEE/ISEK‑compliant platform for reproducible EMG signal processing and feature extraction. Zenodo. [https://doi.org/10.5281/zenodo.18965272]
+
+BibTeX:
+```bibtex
+@software{adlbi2026emg,
+  author       = {Qussai Adlbi},
+  title        = {{EMG Analysis Engine — Module A: An open‑source, 
+                   IEEE/ISEK‑compliant platform for reproducible EMG 
+                   signal processing and feature extraction}},
+  month        = mar,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v1.0.0},
+  doi          = {10.5281/zenodo.18965272},
+  url          = {https://doi.org/10.5281/zenodo.18965272}
+}
+```
+
+---
+
 ## 🤝 Collaboration & funding
 
 I am actively seeking:
 - **Research collaborators** – biomedical engineering, neurology, rehabilitation medicine.
 - **Academic partners** – for clinical dataset access and IRB‑approved validation.
-- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon, Erasmus Mundus.
+- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon.
 - **Institutional pilots** – with rehabilitation centres or prosthetics labs.
 
 If your institution works with EMG data and needs a reproducible, open pipeline – **let's talk.**
