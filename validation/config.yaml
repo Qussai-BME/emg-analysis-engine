@@ -1,0 +1,52 @@
+# config.yaml  — v6.1
+
+processing:
+  sampling_rate: 1000
+  bandpass: [20, 450]
+  notch: 50
+  window_size: 200
+  overlap: 0.5
+  normalize_signal: true
+  compute_ar: true
+  ar_order: 6
+  compute_hjorth: true
+  compute_inter_channel_corr: true
+  compute_wavelet: true
+  wavelet_name: 'db4'
+  wavelet_level: 4
+  compute_freq_features: true
+  compute_spectral_rolloff: false
+  fft_pad_to_power_of_two: true
+  compute_extra_stats: true
+  compute_spectral_centroid: false
+  use_sliding_window: true
+  ssc_threshold: 0.0
+  subsample_every_n: 1
+
+classification:
+  classifier: 'XGBoost'
+  n_estimators: 300
+  n_top_features: 150
+  feature_selection: 'f_classif'
+  use_grid_search: false
+  svm_c: 1.0
+  svm_gamma: 'scale'
+  class_weight: 'balanced'
+  pca_components: null
+
+# ── Key fix: no disk writes during parallel processing ────────────
+# Eliminates "0 bytes written" / "No space left on device" errors.
+# All features stay in RAM (~126 MB for UCI, safe for any modern PC).
+# Set false only for huge datasets (CEMHSEY) where RAM is a concern.
+disable_cache: true
+
+remove_class_zero: true
+
+datasets:
+  uci:
+    path: 'C:\Users\MAIN IT\Desktop\Deebseek EMG\data\emg+data+for+gestures\EMG_data_for_gestures-master'
+    sampling_rate: 1000
+
+output_dir: './validation_reports'
+parallel_processing: true
+n_jobs: 4

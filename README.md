@@ -29,24 +29,27 @@ Today's EMG tools are either locked inside expensive proprietary systems (>$15,0
 ## 🔬 What it does
 
 **1. 📂 Input**  
-Upload CSV/TXT/NPY files or use the built‑in synthetic demo.  
-*Works with real or simulated data.*
+Upload CSV/TXT/NPY/EDF files or use the built‑in synthetic demo.  
+*Multi‑channel support, automatic time‑column removal, interactive channel selection with **Select All / Clear All** buttons and live preview.*
 
 **2. 🧹 Preprocessing**  
 4th‑order Butterworth bandpass filter (20–450 Hz) + 50 Hz notch filter.  
-*Removes motion artifacts and power‑line noise; preserves physiological content per IEEE/ISEK standards.*
+*Zero‑phase filtering, multiple filter types (Butterworth, Chebyshev, Bessel, Elliptic).*
 
 **3. ✅ Quality Check**  
-Signal‑to‑noise ratio (SNR) estimation with a threshold >20 dB.  
-*Ensures signal usability before further analysis.*
+Signal‑to‑noise ratio (SNR) estimation with **adaptive noise floor** (percentile, median, or manual).  
+*Threshold >20 dB ensures signal usability before further analysis.*
 
 **4. 📊 Feature Extraction**  
-MAV, RMS, ZCR, WL, SSC extracted using a sliding window (50% overlap).  
+MAV, RMS, ZCR, WL, SSC (time domain) + MDF, MNF (frequency, optional) extracted using a sliding window (configurable size/overlap).  
 *Gold‑standard features for prosthetic control and clinical assessment.*
 
 **5. 📈 Output**  
 Interactive Streamlit dashboard + standardized JSON.  
-*Ready for visual inspection and integration with future modules (B, C).*
+*5 analysis tabs, **statistical tools** (descriptive stats, correlation, PCA, fatigue index), **PDF reports** (detailed or simplified), **SQLite database** for session logging.*
+
+> ✅ **Current status:** Module A (signal processing & feature extraction) is complete and validated on synthetic + open datasets.  
+> 🚧 **In progress:** Module B (gait analysis / classification) – preliminary accuracy ~88–92% on public EMG data (see [Limitations]).
 
 ---
 
@@ -59,7 +62,11 @@ emg-analysis-engine/
 │
 ├── src/                               # Source code directory
 │   ├── app.py                         # Streamlit dashboard (entry point)
-│   └── core_engine.py                 # IEEE‑grade filtering, feature extraction
+│   ├── core_engine.py                 # IEEE‑grade filtering, feature extraction
+│   ├── emg_stats.py                    # Statistical tools (descriptive stats, correlation, PCA, fatigue)
+│   ├── database.py                      # SQLite session storage
+│   ├── pdf_report.py                    # PDF report generator (with all features)
+│   └── api.py                           # Optional REST API (FastAPI)
 │
 ├── results/                            # Pre‑computed outputs for reference
 │   ├── example_output.json             # JSON output from a typical run
@@ -73,6 +80,7 @@ emg-analysis-engine/
 │   ├── images/                         # Screenshots for README and documentation
 │   │   ├── screenshot1.png              # Main dashboard view
 │   │   └── screenshot2.png              # Feature extraction / spectral analysis view
+│   │   └── screenshot3.png              # Statistics tab
 │   └── README.md                        # Documentation index (coming soon)
 │
 ├── notebooks/                           # Jupyter notebooks for exploration
@@ -96,12 +104,16 @@ emg-analysis-engine/
 ## 📸 Screenshots
 
 ### Main Dashboard
-[Main Dashboard](docs/images/Screenshot1.png)
+[![Main Dashboard](docs/images/screenshot1.png)]
 *Click image to view full size • Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
 
 ### Feature Extraction & Spectral Analysis
-[Feature Extraction](docs/images/Screenshot2.png)
+[![Feature Extraction](docs/images/screenshot2.png)]
 *Click image to view full size • Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
+
+### Statistics Tab
+[![Statistics Tab](docs/images/screenshot3.png)]
+*Click image to view full size • Descriptive statistics per channel, correlation matrix, PCA, and fatigue index with explanatory messages.*
 
 ---
 
@@ -146,7 +158,7 @@ Then open `http://localhost:8501` in your browser.
 
 ### Two ways to use it
 1. **Demo mode** – click "Simulation" in the sidebar → explore instantly with synthetic EMG.  
-2. **Your own data** – switch to "Upload File", choose a CSV/TXT/NPY, adjust settings, and analyse.
+2. **Your own data** – switch to "Upload File", choose a CSV/TXT/NPY/EDF, select channels, and analyse.
 
 ---
 
@@ -156,7 +168,6 @@ $ streamlit run src/app.py
 
 You can now view your Streamlit app in your browser:
 Local URL: http://localhost:8501
-Network URL: http://192.168.x.x:8501
 
 [INFO] Demo mode active – synthetic EMG generated
 [INFO] Filter applied: Butterworth 4th‑order, 20–450 Hz
@@ -183,12 +194,15 @@ Network URL: http://192.168.x.x:8501
 This is **Module A** of a three‑module ecosystem designed for surgical robotics. The roadmap has evolved based on real‑world needs:
 
 ### Near‑term (Module A enhancements)
-- [x] Intelligent error handling (basic version implemented – human‑readable messages)
-- [x] Semantic output layer (implemented – e.g., "moderate activation")
-- [x] Unified JSON schema (draft ready; to be finalised with Modules B/C)
-- [ ] Performance benchmarking (automated speed, memory, accuracy measurement)
-- [ ] Adaptive noise floor estimation (replace fixed σ_noise = 0.01)
-- [ ] Multi‑channel support
+- [✅] Intelligent error handling (basic version implemented – human‑readable messages)
+- [✅] Semantic output layer (implemented – e.g., "moderate activation")
+- [✅] Unified JSON schema (draft ready; to be finalised with Modules B/C)
+- [✅] Adaptive noise floor estimation (percentile/median/manual)
+- [✅] Multi‑channel support + EDF
+- [✅] Statistical analysis (descriptive stats, correlation, PCA, fatigue index)
+- [✅] PDF reports with all features + database logging
+- [✅] Channel selection with Select All / Clear All
+- [ ] Performance benchmarking (automated speed, memory, accuracy)
 
 ### Medium‑term
 - **Module A2 – MyoControl Lite**  
@@ -199,7 +213,7 @@ This is **Module A** of a three‑module ecosystem designed for surgical robotic
   Real‑time EMG → velocity control of a UR5 arm in PyBullet, using exponential smoothing to avoid jerky motion.
 - **Module D – AI‑enhanced control**  
   Adaptive gain based on fatigue estimation and an 8‑12 Hz tremor filter to stabilise prosthetic commands.
-- **Database layer** – SQLite / PostgreSQL for longitudinal patient tracking.
+- **Database layer** – PostgreSQL for cloud‑based longitudinal patient tracking.
 
 ### side projects
 - **EMG Game Controller** – pygame integration for interactive demonstrations.
@@ -210,7 +224,6 @@ This is **Module A** of a three‑module ecosystem designed for surgical robotic
 ### Long‑term
 - **Data‑Fusion Hub**  
   A cloud‑based platform that aggregates EMG, gait, and robotic telemetry into a unified schema, enabling large‑scale studies and personalised ML models.
-
 
 ---
 
@@ -245,7 +258,7 @@ This is **Module A** of a three‑module ecosystem designed for surgical robotic
 ## 📚 Built on solid science
 
 - De Luca, C.J. (1997). *The use of surface electromyography in biomechanics.* Journal of Applied Biomechanics.
-- Phinoymark, A. et al. (2012). *Feature reduction and selection for EMG signal classification.* Expert Systems with Applications.
+- Phinyomark, A. et al. (2012). *Feature reduction and selection for EMG signal classification.* Expert Systems with Applications.
 - Oskoei, M.A. & Hu, H. (2007). *Myoelectric control systems – A survey.* Biomedical Signal Processing and Control.
 - IEEE / ISEK standards for EMG processing.
 - PhysioNet EMG database (open dataset for preliminary validation).
@@ -282,7 +295,7 @@ BibTeX:
 I am actively seeking:
 - **Research collaborators** – biomedical engineering, neurology, rehabilitation medicine.
 - **Academic partners** – for clinical dataset access and IRB‑approved validation.
-- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon.
+- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon, Erasmus Mundus.
 - **Institutional pilots** – with rehabilitation centres or prosthetics labs.
 
 If your institution works with EMG data and needs a reproducible, open pipeline – **let's talk.**
