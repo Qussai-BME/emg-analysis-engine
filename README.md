@@ -1,176 +1,134 @@
-# EMG Analysis Engine — Module A  
-### A modular, clinically‑informed foundation for EMG signal processing  
+# EMG Analysis Engine — Module A
+### A modular, clinically-informed foundation for EMG signal processing
 
-**GitHub Repository:** [Github](https://github.com/Qussai-BME/emg-analysis-engine)  
-**Live App:** [Streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
-**Author:** Qussai Adlbi ([LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385))  
-**Contact:** adlbiqussai@gmail.com  
-**Institution:** Al‑Andalus University · Pázmány Péter Catholic University  
+**GitHub:** [Qussai-BME/emg-analysis-engine](https://github.com/Qussai-BME/emg-analysis-engine) · **Live App:** [streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/) · **License:** MIT
 
-**Python Version:** 3.10 · **License:** MIT · **ISO 13485 Concepts**  
+**Author:** Qussai Adlbi · [LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385) · adlbiqussai@gmail.com
+**Institution:** Al-Andalus University · Pázmány Péter Catholic University · **Python:** 3.10
 
-**📄 Cite this work:**  
-[DOI](https://doi.org/10.5281/zenodo.18965272)  
-*Read the full paper on Zenodo*
+**📄 Cite this work:**
+[DOI](https://doi.org/10.5281/zenodo.18965272)
+*Full paper available on Zenodo*
 
 ---
 
-## 🧠 Why this exists
+## Why this exists
 
-Electromyography (EMG) signals are the electrical language of muscle contraction. They are used daily to diagnose neuromuscular disorders (ALS, myopathy, carpal tunnel syndrome) and to control advanced prosthetics.
+Electromyography (EMG) signals are the electrical language of muscle contraction — used daily to diagnose ALS, myopathy, and carpal tunnel syndrome, and to control advanced prosthetics.
 
-**The gap:**  
-Today's EMG tools are either locked inside expensive proprietary systems (>$15,000) or scattered across research scripts that clinicians cannot use. Reproducibility is low, workflows are fragmented, and the translation from lab to clinic almost never happens.
+The tools available today are broken in two opposite directions. Proprietary clinical systems cost upward of $15,000, ship as sealed units, and offer zero access to the algorithm underneath. Open-source alternatives are lab-specific scripts: undocumented preprocessing decisions, filter cutoffs chosen by someone who left three years ago, results that cannot be reproduced six months later.
 
-**This project** is the first module of a larger biomedical AI ecosystem. It is not a black box. Every filter, every feature, every parameter is chosen with clinical intent and documented transparently. The architecture is designed with **ISO 13485 concepts** in mind — not just code, but a quality management system approach to medical device software.
+Same field. Two failure modes. One consequence: the path from EMG signal to clinical insight is longer, more expensive, and less trustworthy than it needs to be.
 
----
-
-## 🔬 What it does
-
-**1. 📂 Input**  
-Upload CSV/TXT/NPY/EDF files or use the built‑in synthetic demo.  
-*Multi‑channel support, automatic time‑column removal, interactive channel selection with **Select All / Clear All** buttons and live preview.*
-
-**2. 🧹 Preprocessing**  
-4th‑order Butterworth bandpass filter (20–450 Hz) + 50 Hz notch filter.  
-*Zero‑phase filtering, multiple filter types (Butterworth, Chebyshev, Bessel, Elliptic).*
-
-**3. ✅ Quality Check**  
-Signal‑to‑noise ratio (SNR) estimation with **adaptive noise floor** (percentile, median, or manual).  
-*Threshold >20 dB ensures signal usability before further analysis.*
-
-**4. 📊 Feature Extraction**  
-MAV, RMS, ZCR, WL, SSC (time domain) + MDF, MNF (frequency, optional) extracted using a sliding window (configurable size/overlap).  
-*Gold‑standard features for prosthetic control and clinical assessment.*
-
-**5. 📈 Output**  
-Interactive Streamlit dashboard + standardized JSON.  
-*5 analysis tabs, **statistical tools** (descriptive stats, correlation, PCA, fatigue index), **PDF reports** (detailed or simplified), **SQLite database** for session logging.*
-
-> ✅ **Current status:** Module A (signal processing & feature extraction) is complete and validated on synthetic + open datasets.  
-> 🚧 **In progress:** Module B (gait analysis / classification) – preliminary accuracy ~88–92% on public EMG data (see [Limitations]).
+**This project** is Module A of a larger biomedical AI ecosystem. It is not a black box. Every filter, every feature, every parameter is chosen with clinical intent and documented transparently. The architecture is designed with **ISO 13485 quality system concepts** in mind — traceability, risk-aware design, and configuration management as first-class concerns — so that the distance between this codebase and a certifiable product is as short as possible.
 
 ---
 
-## 🏗️ Architecture (Professional Structure)
+## What it does
 
-The project follows a clean, modular structure that separates core logic, user interface, data, and documentation — making it easy to extend, test, and deploy in ISO‑compliant environments.
+**Input**
+Upload CSV, TXT, NPY, or EDF files, or explore instantly with the built-in synthetic demo. Multi-channel support with automatic time-column removal, interactive channel selection with Select All / Clear All, and live signal preview.
+
+**Preprocessing**
+Zero-phase 4th-order Butterworth bandpass filter (20–450 Hz) — the IEEE/ISEK clinical standard — combined with an adaptive 50 Hz notch filter. The notch applies only if a powerline peak is detected via PSD analysis; clean recordings are not distorted. Multiple filter types available: Butterworth, Chebyshev, Bessel, Elliptic.
+
+**Quality gating**
+SNR estimation with adaptive noise floor (percentile, median, or manual). Signals below 20 dB are flagged before feature extraction runs. No silent failures.
+
+**Feature extraction**
+MAV, RMS, ZCR, Waveform Length, SSC (time domain) + MDF, MNF (frequency domain), extracted via configurable sliding windows. The five time-domain features have the strongest evidence base for prosthetic control and clinical EMG assessment.
+
+**Output**
+Interactive Streamlit dashboard + standardized JSON. Five analysis tabs, statistical tools (descriptive stats, correlation matrix, PCA, fatigue index), PDF reports (detailed or simplified), and SQLite session logging.
+
+**Validation suite**
+A dedicated `validation/` module for Leave-One-Subject-Out (LOSO) cross-validation on public datasets (UCI Gesture, Ninapro DB7, CEMHSEY). Includes configurable feature pipelines, parallel processing, checkpointing, and automatic Markdown/HTML/JSON report generation. **86.92% accuracy on UCI Gesture** (36 subjects, 7 gestures, strict LOSO protocol — full details below).
+
+---
+
+## Architecture
 
 ```
 emg-analysis-engine/
 │
-├── src/                               # Source code directory
-│   ├── app.py                         # Streamlit dashboard (entry point)
-│   ├── core_engine.py                 # IEEE‑grade filtering, feature extraction
-│   ├── emg_stats.py                    # Statistical tools (descriptive stats, correlation, PCA, fatigue)
-│   ├── database.py                      # SQLite session storage
-│   ├── pdf_report.py                    # PDF report generator (with all features)
-│   └── api.py                           # Optional REST API (FastAPI)
+├── src/
+│   ├── core_engine.py            # IEEE/ISEK-compliant filtering + feature extraction
+│   ├── app.py                    # Streamlit dashboard (entry point)
+│   ├── emg_stats.py              # Statistical tools (PCA, fatigue index, correlation)
+│   ├── database.py               # SQLite session storage
+│   ├── pdf_report.py             # PDF report generator
+│   └── api.py                    # Optional REST API (FastAPI)
 │
-├── results/                            # Pre‑computed outputs for reference
-│   ├── example_output.json             # JSON output from a typical run
-│   └── sample_output.json              # Additional sample output for testing
+├── validation/
+│   ├── config.yaml               # Full pipeline configuration
+│   ├── validate_engine.py        # CLI entry point
+│   ├── process_engine.py         # Advanced features: wavelet, AR, Hjorth, TKEO
+│   ├── data_loaders.py           # UCI / Ninapro DB7 / CEMHSEY loaders
+│   ├── metrics.py                # LOSO-CV + classifiers (RF, XGBoost, LDA)
+│   ├── validate_engine.py        # Orchestration + parallel processing
+│   ├── report_generator.py       # Markdown / HTML / JSON reports
+│   └── checkpoint.py             # Resume-from-checkpoint utility
 │
-├── data/                               # Example data and documentation
-│   ├── sample_emg.csv                  # 3‑second synthetic EMG for quick testing
-│   └── README.md                       # Description of data formats and sources
+├── data/
+│   ├── sample_emg.csv            # 3-second synthetic EMG for quick testing
+│   ├── README.md                 # Data format documentation
+│   └── emg+data+for+gestures/    # UCI Gesture dataset (36 subjects)
+│       └── subject1/ … subject36/
 │
-├── docs/                               # Documentation and screenshots
-│   ├── images/                         # Screenshots for README and documentation
-│   │   ├── screenshot1.png              # Main dashboard view
-│   │   └── screenshot2.png              # Feature extraction / spectral analysis view
-│   │   └── screenshot3.png              # Statistics tab
-│   └── README.md                        # Documentation index (coming soon)
+├── docs/
+│   └── images/                   # Screenshots + confusion matrix
 │
-├── notebooks/                           # Jupyter notebooks for exploration
-│   └── demo_analysis.ipynb              # Step‑by‑step walkthrough of the pipeline
-│
-├── requirements.txt                    # One‑click dependency installation
-├── .gitignore                           # Git ignore rules
-└── README.md                           # You are here
+├── requirements.txt
+├── README.md
+├── .gitignore                    # Excludes venv/, validation_reports/, __pycache__/
+└── experiment_notes.md           # Lab notebook: "What surprised me today?"
+
+# Generated at runtime (gitignored):
+├── validation_reports/           # HTML/JSON reports + per-subject feature cache
+├── __pycache__/
+└── venv/
 ```
 
-**Why this structure?**  
-- **src/** keeps all source code in one place — clean and professional.  
-- **results/** provides multiple output examples for immediate insight into expected formats.  
-- **data/** includes its own README for clarity on dataset formats and usage.  
-- **docs/images/** stores screenshots for clear visual documentation.  
-- **notebooks/** includes a demo notebook for interactive exploration and education.  
-- Every directory serves a purpose — nothing is arbitrary.
+`src/` keeps all source code in one place. `validation/` provides a complete, reproducible pipeline for every reported result. `core_engine.py` is fully decoupled from the Streamlit interface — a separation that prevented a class of silent bugs where interface state altered computation. Every directory serves a purpose.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 ### Main Dashboard
-[![Main Dashboard](docs/images/screenshot1.png)]
-*Click image to view full size • Interactive dashboard with signal visualization, control panel, and real‑time analysis.*
+[Main Dashboard](docs/images/screenshot1.png)
+*Interactive dashboard: signal visualization, control panel, and real-time analysis.*
 
-### Feature Extraction & Spectral Analysis
-[![Feature Extraction](docs/images/screenshot2.png)]
-*Click image to view full size • Feature extraction (MAV, RMS, ZCR, WL) and frequency domain analysis with EMG bandwidth highlighted.*
+### Feature Extraction and Spectral Analysis
+[Feature Extraction](docs/images/screenshot2.png)
+*Feature extraction (MAV, RMS, ZCR, WL) and frequency-domain analysis with EMG bandwidth highlighted.*
 
 ### Statistics Tab
-[![Statistics Tab](docs/images/screenshot3.png)]
-*Click image to view full size • Descriptive statistics per channel, correlation matrix, PCA, and fatigue index with explanatory messages.*
+[Statistics Tab](docs/images/screenshot3.png)
+*Descriptive statistics per channel, correlation matrix, PCA, and fatigue index.*
 
 ---
 
-## 🧪 What Surprised Me (Hard Lessons from Real Development)
+## Get started in 2 minutes
 
-This project taught me more than signal processing — it taught me how easily assumptions break when they meet real data. Here are the four most valuable surprises:
+**Prerequisites:** Python 3.9–3.11, pip
 
-1. **50Hz noise is not guaranteed.**  
-   I initially hardcoded a notch filter for every signal. Then I processed battery‑powered recordings — no 50Hz peak. Applying a notch filter when no interference exists *distorts* the signal. Now the engine checks the PSD first; it only applies the notch if a peak is detected. This small change preserves signal integrity in clean recordings.
-
-2. **Window size is a clinical decision, not a parameter.**  
-   A 100 ms window reacts fast but produces jittery features; 200 ms stabilises the estimates but loses temporal resolution. There is no “correct” number — it depends on whether you are controlling a prosthetic (need speed) or diagnosing fatigue (need stability). I learned to expose this trade‑off transparently, not hide it behind a default.
-
-3. **Data leakage kills generalisation.**  
-   Early classification tests hit 95% accuracy. Then I switched to Leave‑One‑Subject‑Out validation — accuracy dropped to 82%. Why? Because random split puts parts of the same subject in both train and test sets. The model was memorising, not learning. Real‑world generalisation requires subject‑wise separation. This is now part of every future module’s validation protocol.
-
-4. **Cloud deployment forces brutal honesty about resources.**  
-   Streamlit Cloud gives you 1 GB RAM. A 500,000‑sample EMG file — together with filtered copies, feature arrays, and Plotly figures — exceeds that limit. The app would crash silently. I had to implement smart downsampling for visualisation, file size checks, and graceful degradation. Engineering for deployment is as important as engineering for accuracy.
-
-These lessons are now baked into the architecture. They are why the engine handles real data, not just synthetic examples.
-
----
-
-## ⚡ Get started in 2 minutes
-
-### Prerequisites
-- Python 3.9 – 3.11
-- pip
-
-### Installation
 ```bash
 git clone https://github.com/Qussai-BME/emg-analysis-engine.git
 cd emg-analysis-engine
 pip install -r requirements.txt
-```
-
-### Launch the dashboard
-```bash
 streamlit run src/app.py
 ```
-Then open `http://localhost:8501` in your browser.
 
-### Two ways to use it
-1. **Demo mode** – click "Simulation" in the sidebar → explore instantly with synthetic EMG.  
-2. **Your own data** – switch to "Upload File", choose a CSV/TXT/NPY/EDF, select channels, and analyse.
+Open `http://localhost:8501`.
 
----
+**Demo mode** — click "Simulation" in the sidebar to explore with synthetic EMG instantly.
+**Your own data** — switch to "Upload File", select a CSV/TXT/NPY/EDF, choose channels, and analyse.
 
-## 📈 Example run (console output)
+**Example console output:**
 ```
-$ streamlit run src/app.py
-
-You can now view your Streamlit app in your browser:
-Local URL: http://localhost:8501
-
 [INFO] Demo mode active – synthetic EMG generated
-[INFO] Filter applied: Butterworth 4th‑order, 20–450 Hz
+[INFO] Filter applied: Butterworth 4th-order, 20–450 Hz
 [INFO] Features extracted: MAV=0.142, RMS=0.198, ZCR=87, WL=14.3, SSC=134
 [INFO] SNR: 24.7 dB – Signal quality: ACCEPTABLE
 [INFO] Output saved: results/example_output.json
@@ -178,141 +136,162 @@ Local URL: http://localhost:8501
 
 ---
 
-## 🧪 Validation & performance
+## Validation results
 
-- **Signal reconstruction fidelity** – >95% (post‑filter SNR preservation)  
-- **Feature stability** – RMS variance <3% across identical signals  
-- **Processing speed** – <200 ms for a 5‑second signal @ 2000 Hz  
-- **Preliminary classification accuracy** – 88–92% on public EMG datasets (subject‑dependent)  
+### UCI Gesture dataset — 86.92% LOSO accuracy
 
-> ⚠️ *These numbers are research‑grade, not clinical claims. See [Limitations].*
+**Dataset:** 36 subjects · 8 channels · 7 hand gestures · 1000 Hz
+**Protocol:** Leave-One-Subject-Out cross-validation · no data leakage (PCA and scaler fitted on training fold only)
+**Classifier:** XGBoost / Random Forest (configurable)
 
----
+**Feature set (364 features total):**
+time-domain (IEMG, MAV, logMAV, MAVS, SSI, RMS, logRMS, V-order, Log-detector, WL, ZCR, SSC, logVAR, Skewness, Kurtosis, TKEO) · Hjorth parameters (Activity, Mobility, Complexity) · AR autocorrelation coefficients (order 6) · wavelet energy and entropy (db4, 4 levels) · frequency-domain (MNF, MDF, peak frequency, spectral entropy, band powers 20–150 / 150–350 / 350–450 Hz) · inter-channel Pearson correlations (28 pairs)
 
-## 🧭 Roadmap – what's next
+| Metric | Value |
+|--------|-------|
+| Mean LOSO accuracy | **86.92%** |
+| Std across subjects | ±14.65%* |
+| Subjects | 36 |
+| Gestures classified | 7 |
+| Feature count | 364 |
+| Processing time (36 subjects) | < 10 min (4 cores) |
 
-This is **Module A** of a three‑module ecosystem designed for surgical robotics. The roadmap has evolved based on real‑world needs:
+*High standard deviation reflects genuine inter-subject variability in UCI Gesture: electrode placement and skin impedance differ significantly across 36 subjects recorded in uncontrolled conditions. This is a property of the dataset, not a modelling instability — per-subject accuracy breakdown is available in the full validation report.*
 
-### Near‑term (Module A enhancements)
-- [✅] Intelligent error handling (basic version implemented – human‑readable messages)
-- [✅] Semantic output layer (implemented – e.g., "moderate activation")
-- [✅] Unified JSON schema (draft ready; to be finalised with Modules B/C)
-- [✅] Adaptive noise floor estimation (percentile/median/manual)
-- [✅] Multi‑channel support + EDF
-- [✅] Statistical analysis (descriptive stats, correlation, PCA, fatigue index)
-- [✅] PDF reports with all features + database logging
-- [✅] Channel selection with Select All / Clear All
-- [ ] Performance benchmarking (automated speed, memory, accuracy)
+[Confusion Matrix](docs/images/UCI_Gesture_cm.png)
 
-### Medium‑term
-- **Module A2 – MyoControl Lite**  
-  Gesture classification (6 hand movements) using Ninapro DB1 dataset, with PSD‑based adaptive notch filtering, gold‑standard features, and Leave‑One‑Subject‑Out SVM validation. Will be released as a separate Streamlit tab.
-- **Module B – Gait analysis integration**  
-  EMG + IMU fusion to compute joint angles and detect gait phases (stance/swing). Will be released as a separate tab in the same dashboard.
-- **Module C – Surgical robot interface**  
-  Real‑time EMG → velocity control of a UR5 arm in PyBullet, using exponential smoothing to avoid jerky motion.
-- **Module D – AI‑enhanced control**  
-  Adaptive gain based on fatigue estimation and an 8‑12 Hz tremor filter to stabilise prosthetic commands.
-- **Database layer** – PostgreSQL for cloud‑based longitudinal patient tracking.
+**Reproduce these results:**
+```bash
+pip install xgboost PyWavelets
+python validation/validate_engine.py --datasets uci --config validation/config.yaml
+```
 
-### side projects
-- **EMG Game Controller** – pygame integration for interactive demonstrations.
-- **ECG Stress Detector** – heart rate variability analysis using neurokit2.
-- **RC Car via EMG** – Arduino + serial control.
-- **Gesture Recognition API** – FastAPI wrapper for the classifier.
-
-### Long‑term
-- **Data‑Fusion Hub**  
-  A cloud‑based platform that aggregates EMG, gait, and robotic telemetry into a unified schema, enabling large‑scale studies and personalised ML models.
+**Validation on Ninapro DB1 and CEMHSEY** is ongoing and will be reported in subsequent releases.
 
 ---
 
-## ⚠️ Limitations – read carefully
+## What surprised me — four hard lessons
+
+This section exists because reproducibility is not just about code. It is about documenting the moments when assumptions break.
+
+**1. The 50 Hz notch filter can be wrong.**
+I initially applied it to every signal. Battery-powered recordings have no powerline interference — applying a notch where no peak exists distorts the signal. The engine now runs a PSD check first. The notch fires only when warranted. This is a one-line policy change that took real data to discover.
+
+**2. Window size is a clinical decision, not a parameter.**
+A 100 ms window reacts fast but produces jittery features. A 200 ms window stabilises estimates but loses temporal resolution. There is no universally correct number — it depends on whether you are controlling a prosthetic (prioritise speed) or diagnosing fatigue (prioritise stability). The right response is to expose the trade-off, not hide it behind a default.
+
+**3. Data leakage makes results meaningless.**
+Early classification tests showed 95% accuracy. Switching to Leave-One-Subject-Out cross-validation brought that number down substantially. The reason: random splits place parts of the same subject in both train and test sets. The model was memorising inter-session patterns, not learning gesture signatures. Subject-wise separation is now a non-negotiable constraint in every future module.
+
+**4. Cloud deployment forces honest engineering.**
+Streamlit Cloud provides 1 GB RAM. A 500,000-sample, 8-channel EMG file — together with filtered copies, feature arrays, and Plotly figures — exceeds that limit. The app crashed silently. The fix required smart downsampling for visualisation, file size checks on upload, and graceful degradation when memory headroom is low. Engineering for deployment constraints is as important as engineering for accuracy.
+
+These four lessons are now encoded in the architecture. They are why the engine handles real data, not just synthetic examples.
+
+---
+
+## Roadmap
+
+### Module A — complete
+- [x] IEEE/ISEK-compliant preprocessing pipeline
+- [x] Adaptive SNR quality gating
+- [x] Five validated time-domain features + frequency features
+- [x] Full validation suite with LOSO-CV and public datasets
+- [x] Streamlit dashboard + PDF reports + SQLite logging
+- [x] ISO 13485 quality system concepts applied throughout
+- [ ] Automated performance benchmarking (speed, memory, accuracy)
+
+### Module A2 — MyoControl Lite *(next)*
+Gesture classification (6 hand movements) using Ninapro DB1. PSD-based adaptive notch, gold-standard features, LOSO SVM validation. Released as a separate Streamlit tab.
+
+### Module B — Gait analysis
+EMG + IMU fusion via complementary filter. Joint angle estimation, stance/swing phase detection, spatiotemporal gait parameters.
+
+### Module C — Surgical robot interface
+Real-time EMG → velocity control of a UR5 arm in PyBullet. Exponential moving average smoothing for natural motion. Gesture-to-command mapping for 6 hand postures.
+
+### Module D — AI-enhanced control
+Adaptive gain based on real-time fatigue estimation. 8–12 Hz tremor bandstop filter on the control signal. Maintains consistent prosthetic performance as muscle output degrades.
+
+### Long-term — Data-Fusion Hub
+Cloud-scalable platform aggregating EMG, gait kinematics, and robotic telemetry under a single versioned schema. Designed for longitudinal neurorehabilitation studies and personalised ML models.
+
+---
+
+## Limitations
 
 **This project is:**
-- ✅ A research‑grade signal processing tool
-- ✅ A validated foundation for biomedical feature extraction
-- ✅ An open platform for reproducible EMG research
-- ✅ Developed with **ISO 13485 quality system concepts** (traceability, risk management, validation)
+- ✅ A research-grade signal processing and classification tool
+- ✅ An open, reproducible platform for EMG research
+- ✅ A foundation developed with ISO 13485 quality management concepts (traceability, risk-aware design, configuration management)
 
-**This project is NOT:**
-- ❌ FDA‑approved or CE‑marked medical device
+**This project is not:**
+- ❌ An FDA-approved or CE-marked medical device
 - ❌ Clinically validated on patient populations
-- ❌ Suitable for diagnosis or treatment decisions
-- ❌ A replacement for clinical EMG systems
+- ❌ Suitable for diagnostic or treatment decisions
+- ❌ A replacement for regulated clinical EMG systems
 
-**Data limitations:**
-- Current validation uses synthetic + limited open‑source datasets.
-- Electrode placement, skin impedance, and inter‑subject differences are not fully modelled.
-- Real‑world clinical noise differs from controlled environments.
+Current validation uses open-source research datasets. Electrode placement variability, skin impedance differences, and inter-subject anatomical variation are not fully controlled. Real-world clinical noise environments differ from the recording conditions of these datasets.
 
-**Before any clinical application, this system requires:**
-- IRB‑approved trials
-- Regulatory review (FDA 510(k) / CE)
-- Validation on large, diverse patient datasets
+Any clinical application requires IRB-approved trials, regulatory review (FDA 510(k) or CE marking), and validation on large, diverse patient datasets.
 
-*Transparency in medical engineering is not weakness – it is the only ethical path forward.*
+Transparency about what a system cannot do is not a weakness. In medical engineering, it is the only ethical baseline.
 
 ---
 
-## 📚 Built on solid science
+## Built on solid science
 
-- De Luca, C.J. (1997). *The use of surface electromyography in biomechanics.* Journal of Applied Biomechanics.
-- Phinyomark, A. et al. (2012). *Feature reduction and selection for EMG signal classification.* Expert Systems with Applications.
-- Oskoei, M.A. & Hu, H. (2007). *Myoelectric control systems – A survey.* Biomedical Signal Processing and Control.
-- IEEE / ISEK standards for EMG processing.
-- PhysioNet EMG database (open dataset for preliminary validation).
-- **ISO 13485:2016** – Medical devices – Quality management systems (concepts applied in architecture).
+- De Luca, C.J. (1997). The use of surface electromyography in biomechanics. *Journal of Applied Biomechanics.*
+- Phinyomark, A. et al. (2012). Feature reduction and selection for EMG signal classification. *Expert Systems with Applications.*
+- Oskoei, M.A. & Hu, H. (2007). Myoelectric control systems — a survey. *Biomedical Signal Processing and Control.*
+- IEEE/ISEK standards for surface EMG processing.
+- PhysioNet, UCI Machine Learning Repository — open datasets used for validation.
+- ISO 13485:2016 — Medical devices quality management systems (concepts applied in architecture).
 
 ---
 
-## 📄 Cite this work
+## Cite this work
 
-If you use this project in your research, please cite the Zenodo record:
+> Qussai Adlbi. (2026). *EMG Analysis Engine — Module A: An open-source, IEEE/ISEK-compliant platform for reproducible EMG signal processing and feature extraction.* Zenodo. https://doi.org/10.5281/zenodo.18965272
 
-> Qussai Adlbi. (2026). EMG Analysis Engine — Module A: An open‑source, IEEE/ISEK‑compliant platform for reproducible EMG signal processing and feature extraction. Zenodo. [https://doi.org/10.5281/zenodo.18965272]
-
-BibTeX:
 ```bibtex
 @software{adlbi2026emg,
-  author       = {Qussai Adlbi},
-  title        = {{EMG Analysis Engine — Module A: An open‑source, 
-                   IEEE/ISEK‑compliant platform for reproducible EMG 
-                   signal processing and feature extraction}},
-  month        = mar,
-  year         = 2026,
-  publisher    = {Zenodo},
-  version      = {v1.0.0},
-  doi          = {10.5281/zenodo.18965272},
-  url          = {https://doi.org/10.5281/zenodo.18965272}
+  author    = {Qussai Adlbi},
+  title     = {{EMG Analysis Engine — Module A}},
+  month     = mar,
+  year      = 2026,
+  publisher = {Zenodo},
+  version   = {v1.0.0},
+  doi       = {10.5281/zenodo.18965272},
+  url       = {https://doi.org/10.5281/zenodo.18965272}
 }
 ```
 
 ---
 
-## 🤝 Collaboration & funding
+## Collaboration and funding
 
-I am actively seeking:
-- **Research collaborators** – biomedical engineering, neurology, rehabilitation medicine.
-- **Academic partners** – for clinical dataset access and IRB‑approved validation.
-- **Grant opportunities** – NIH NIBIB, Wellcome Trust, EU Horizon, Erasmus Mundus.
-- **Institutional pilots** – with rehabilitation centres or prosthetics labs.
+Actively seeking:
+- Research collaborators in biomedical engineering, neurology, and rehabilitation medicine
+- Academic partners for clinical dataset access and IRB-approved validation studies
+- Grant opportunities: NIH NIBIB, Wellcome Trust, EU Horizon Europe
+- Institutional pilots with rehabilitation centres or prosthetics labs
 
-If your institution works with EMG data and needs a reproducible, open pipeline – **let's talk.**
+If your institution works with EMG data and needs a reproducible, auditable pipeline — let's talk.
 
-📧 adlbiqussai@gmail.com  
-🔗 [linkedin](https://www.linkedin.com/in/qussai-adlbi-99aa05385)  
-🐙 [github](https://github.com/Qussai-BME)  
-🏫 Al‑Andalus University / Pázmány Péter Catholic University
+📧 adlbiqussai@gmail.com
+🔗 [LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385)
+🐙 [GitHub](https://github.com/Qussai-BME)
+🏫 Al-Andalus University / Pázmány Péter Catholic University
 
 ---
 
-## 📄 License
+## License
 
-MIT License – open for research use.  
+MIT — open for research use.
 Commercial deployment and clinical use require separate agreements and regulatory compliance.
 
 ---
 
-**Built at the intersection of signal processing, clinical need, and the stubborn belief that good science should be accessible.**  
+*Built at the intersection of signal processing, clinical need, and the stubborn belief that good science should be accessible.*
 *This is not the final version. It is the right foundation.*
