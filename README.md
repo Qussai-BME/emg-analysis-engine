@@ -213,13 +213,13 @@ These four lessons are now encoded in the architecture. They are why the engine 
 ## Roadmap
 
 ### Module A — complete
-- [x] IEEE/ISEK-compliant preprocessing pipeline
-- [x] Adaptive SNR quality gating
-- [x] Five validated time-domain features + frequency features
-- [x] Full validation suite with LOSO-CV and public datasets
-- [x] Streamlit dashboard + PDF reports + SQLite logging
-- [x] ISO 13485 quality system concepts applied throughout
-- [ ] Automated performance benchmarking (speed, memory, accuracy)
+- [x] IEEE/ISEK-compliant preprocessing pipeline.
+- [x] Adaptive SNR quality gating.
+- [x] Five validated time-domain features + frequency features.
+- [x] Full validation suite with LOSO-CV and public datasets.
+- [x] Streamlit dashboard + PDF reports + SQLite logging.
+- [x] ISO 13485 quality system concepts applied throughout.
+- [ ] Automated performance benchmarking (speed, memory, accuracy).
 
 ### Module A2 — MyoControl Lite *(next)*
 Gesture classification (6 hand movements) using Ninapro DB1. PSD-based adaptive notch, gold-standard features, LOSO SVM validation. Released as a separate Streamlit tab.
