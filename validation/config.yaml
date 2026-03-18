@@ -34,7 +34,7 @@ classification:
   class_weight: 'balanced'
   pca_components: null
 
-# ── Key fix: no disk writes during parallel processing ────────────
+# ── Key fix: no disk writes during parallel processing ──────
 # Eliminates "0 bytes written" / "No space left on device" errors.
 # All features stay in RAM (~126 MB for UCI, safe for any modern PC).
 # Set false only for huge datasets (CEMHSEY) where RAM is a concern.

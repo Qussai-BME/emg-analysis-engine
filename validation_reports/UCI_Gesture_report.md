@@ -47,6 +47,6 @@
 - **PCA**: inside each fold (no data leakage)
 - **Accuracy**: 87.16% +/- 14.45%
 ![Confusion Matrix](UCI_Gesture_cm.png)
-
+---
 ## Issues
 None.
