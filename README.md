@@ -1,20 +1,16 @@
 # EMG Analysis Engine — Module A
 ### A modular, clinically-informed foundation for EMG signal processing
+**GitHub Repository:** [Github](https://github.com/Qussai-BME/emg-analysis-engine)  
+**Live App:** [Streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/)  
+**Author:** Qussai Adlbi ([LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385))  
+**Contact:** adlbiqussai@gmail.com  
+**Institution:** Al‑Andalus University · Pázmány Péter Catholic University  
 
-**GitHub:** [Qussai-BME/emg-analysis-engine](https://github.com/Qussai-BME/emg-analysis-engine).
+**Python Version:** 3.10 · **License:** MIT · **ISO 13485 Concepts**  
 
-**Live App:** [streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/) · 
-
-**Author:** Qussai Adlbi ·   adlbiqussai@gmail.com
-
-[LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385) · 
-
-**Institution:** Al-Andalus University · Pázmány Péter Catholic University · **Python:** 3.10
-**License:** MIT
-
-**📄 Cite this work:**
-[DOI](https://doi.org/10.5281/zenodo.18965272)
-*Full paper available on Zenodo*
+**📄 Cite this work:**  
+[DOI](https://doi.org/10.5281/zenodo.18965272)  
+*Read the full paper on Zenodo*
 
 ---
 
@@ -96,23 +92,21 @@ emg-analysis-engine/
 ```
 
 `src/` keeps all source code in one place. `validation/` provides a complete, reproducible pipeline for every reported result. `core_engine.py` is fully decoupled from the Streamlit interface — a separation that prevented a class of silent bugs where interface state altered computation. Every directory serves a purpose.
-
 ---
 
 ## Screenshots
 
 ### Main Dashboard
-[Main Dashboard](docs/images/screenshot1.png)
+[![Main Dashboard](docs/images/screenshot1.png)](docs/images/screenshot1.png)
 *Interactive dashboard: signal visualization, control panel, and real-time analysis.*
 
 ### Feature Extraction and Spectral Analysis
-[Feature Extraction](docs/images/screenshot2.png)
+[![Feature Extraction](docs/images/screenshot2.png)](docs/images/screenshot2.png)
 *Feature extraction (MAV, RMS, ZCR, WL) and frequency-domain analysis with EMG bandwidth highlighted.*
 
 ### Statistics Tab
-[Statistics Tab](docs/images/screenshot3.png)
+[![Statistics Tab](docs/images/screenshot3.png)](docs/images/screenshot3.png)
 *Descriptive statistics per channel, correlation matrix, PCA, and fatigue index.*
-
 ---
 
 ## Get started in 2 minutes
