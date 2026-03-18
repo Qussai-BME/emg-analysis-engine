@@ -5,7 +5,10 @@
 
 **Live App:** [streamlit.app](https://emg-analysis-engine-qussai-adlbi.streamlit.app/) · 
 
-**Author:** Qussai Adlbi · [LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385) · adlbiqussai@gmail.com
+**Author:** Qussai Adlbi ·   adlbiqussai@gmail.com
+
+[LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385) · 
+
 **Institution:** Al-Andalus University · Pázmány Péter Catholic University · **Python:** 3.10
 **License:** MIT
 
