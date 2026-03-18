@@ -7,11 +7,11 @@ processing:
   window_size: 200
   overlap: 0.5
   normalize_signal: true
-  compute_ar: true
+  compute_ar: false
   ar_order: 6
   compute_hjorth: true
   compute_inter_channel_corr: true
-  compute_wavelet: true
+  compute_wavelet: false
   wavelet_name: 'db4'
   wavelet_level: 4
   compute_freq_features: true

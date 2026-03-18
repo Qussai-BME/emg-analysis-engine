@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head><meta charset='utf-8'><title>UCI_Gesture Report</title><style>body{font-family:sans-serif;max-width:1200px;margin:auto;padding:2em}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:4px 8px;font-size:0.8em}</style></head><body><h1>Validation Report: UCI_Gesture</h1>
-<p><em>Generated 2026-03-18 05:22</em></p>
+<p><em>Generated 2026-03-18 21:16</em></p>
 <h2>Dataset Overview</h2>
 <ul>
 <li>Subjects: 36</li>
@@ -15,11 +15,11 @@
 <li><strong>window_size</strong>: 200</li>
 <li><strong>overlap</strong>: 0.5</li>
 <li><strong>normalize_signal</strong>: True</li>
-<li><strong>compute_ar</strong>: True</li>
+<li><strong>compute_ar</strong>: False</li>
 <li><strong>ar_order</strong>: 6</li>
 <li><strong>compute_hjorth</strong>: True</li>
 <li><strong>compute_inter_channel_corr</strong>: True</li>
-<li><strong>compute_wavelet</strong>: True</li>
+<li><strong>compute_wavelet</strong>: False</li>
 <li><strong>wavelet_name</strong>: db4</li>
 <li><strong>wavelet_level</strong>: 4</li>
 <li><strong>compute_freq_features</strong>: True</li>
@@ -55,7 +55,7 @@
 <th>ch0_HjAct</th>
 <th>ch0_HjMob</th>
 <th>ch0_HjCmp</th>
-<th>ch0_AR1</th>
+<th>ch0_MNF</th>
 </tr>
 </thead>
 <tbody>
@@ -80,7 +80,7 @@
 <td>0.0211 +/- 0.0536</td>
 <td>0.6955 +/- 0.1121</td>
 <td>2.1068 +/- 0.2600</td>
-<td>0.7476 +/- 0.0828</td>
+<td>89.1354 +/- 18.9215</td>
 </tr>
 <tr>
 <td>2</td>
@@ -103,7 +103,7 @@
 <td>2.4459 +/- 2.9459</td>
 <td>0.7143 +/- 0.1216</td>
 <td>2.0808 +/- 0.2668</td>
-<td>0.7332 +/- 0.0924</td>
+<td>92.0248 +/- 20.7539</td>
 </tr>
 <tr>
 <td>3</td>
@@ -126,7 +126,7 @@
 <td>2.8612 +/- 3.1380</td>
 <td>0.7098 +/- 0.1174</td>
 <td>2.0814 +/- 0.2596</td>
-<td>0.7368 +/- 0.0885</td>
+<td>91.4823 +/- 19.9475</td>
 </tr>
 <tr>
 <td>4</td>
@@ -149,7 +149,7 @@
 <td>0.2745 +/- 0.4573</td>
 <td>0.7054 +/- 0.1184</td>
 <td>2.0959 +/- 0.2623</td>
-<td>0.7400 +/- 0.0892</td>
+<td>90.6265 +/- 20.0087</td>
 </tr>
 <tr>
 <td>5</td>
@@ -172,7 +172,7 @@
 <td>0.9507 +/- 1.3059</td>
 <td>0.7126 +/- 0.1205</td>
 <td>2.0793 +/- 0.2665</td>
-<td>0.7342 +/- 0.0916</td>
+<td>91.9023 +/- 20.6643</td>
 </tr>
 <tr>
 <td>6</td>
@@ -195,7 +195,7 @@
 <td>1.1325 +/- 1.5772</td>
 <td>0.7077 +/- 0.1206</td>
 <td>2.0868 +/- 0.2624</td>
-<td>0.7384 +/- 0.0911</td>
+<td>91.1417 +/- 20.4820</td>
 </tr>
 <tr>
 <td>7</td>
@@ -218,7 +218,7 @@
 <td>1.9972 +/- 2.2490</td>
 <td>0.6837 +/- 0.1036</td>
 <td>2.1317 +/- 0.2480</td>
-<td>0.7565 +/- 0.0713</td>
+<td>87.2021 +/- 16.2308</td>
 </tr>
 </tbody>
 </table>
@@ -227,7 +227,7 @@
 <li><strong>Classifier</strong>: see config</li>
 <li><strong>Cross-validation</strong>: Leave-One-Subject-Out (LOSO)</li>
 <li><strong>PCA</strong>: inside each fold (no data leakage)</li>
-<li><strong>Accuracy</strong>: 86.92% +/- 14.65%
+<li><strong>Accuracy</strong>: 87.16% +/- 14.45%
 <img alt="Confusion Matrix" src="UCI_Gesture_cm.png" /></li>
 </ul>
 <h2>Issues</h2>
