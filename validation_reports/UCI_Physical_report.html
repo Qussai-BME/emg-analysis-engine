@@ -1,0 +1,120 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>UCI_Physical Report</title><style>body{font-family:sans-serif;max-width:1200px;margin:auto;padding:2em}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:4px 8px;font-size:0.8em}</style></head><body><h1>Validation Report: UCI_Physical</h1>
+<p><em>Generated 2026-04-10 15:17</em></p>
+<h2>Dataset Overview</h2>
+<ul>
+<li>Subjects: 4</li>
+<li>Channels: 8</li>
+<li>Sampling rate: 1000 Hz</li>
+<li>Movements: 2</li>
+</ul>
+<h2>Processing Parameters</h2>
+<ul>
+<li><strong>sampling_rate</strong>: 2000</li>
+<li><strong>bandpass</strong>: [20, 450]</li>
+<li><strong>notch</strong>: 50</li>
+<li><strong>window_size</strong>: 400</li>
+<li><strong>overlap</strong>: 0.5</li>
+<li><strong>normalize_signal</strong>: True</li>
+<li><strong>compute_ar</strong>: False</li>
+<li><strong>ar_order</strong>: 6</li>
+<li><strong>compute_hjorth</strong>: True</li>
+<li><strong>compute_inter_channel_corr</strong>: True</li>
+<li><strong>compute_wavelet</strong>: False</li>
+<li><strong>wavelet_name</strong>: db4</li>
+<li><strong>wavelet_level</strong>: 4</li>
+<li><strong>compute_freq_features</strong>: False</li>
+<li><strong>compute_spectral_rolloff</strong>: False</li>
+<li><strong>fft_pad_to_power_of_two</strong>: True</li>
+<li><strong>compute_extra_stats</strong>: True</li>
+<li><strong>compute_spectral_centroid</strong>: False</li>
+<li><strong>use_sliding_window</strong>: True</li>
+<li><strong>ssc_threshold</strong>: 0.05</li>
+<li><strong>subsample_every_n</strong>: 1</li>
+<li><strong>windowing_chunk_size</strong>: 1024</li>
+</ul>
+<h2>Feature Statistics (first 20 features, Mean +/- Std)</h2>
+<table>
+<thead>
+<tr>
+<th>Movement</th>
+<th>ch0_IEMG</th>
+<th>ch0_MAV</th>
+<th>ch0_logMAV</th>
+<th>ch0_MAVS</th>
+<th>ch0_SSI</th>
+<th>ch0_RMS</th>
+<th>ch0_logRMS</th>
+<th>ch0_VO3</th>
+<th>ch0_LogDet</th>
+<th>ch0_WL</th>
+<th>ch0_ZCR</th>
+<th>ch0_SSC</th>
+<th>ch0_logVAR</th>
+<th>ch0_Skew</th>
+<th>ch0_Kurt</th>
+<th>ch0_TKEO</th>
+<th>ch0_HjAct</th>
+<th>ch0_HjMob</th>
+<th>ch0_HjCmp</th>
+<th>ch1_IEMG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>110.7874 +/- 145.2551</td>
+<td>0.2770 +/- 0.3631</td>
+<td>-2.1857 +/- 1.5475</td>
+<td>-0.0003 +/- 0.2793</td>
+<td>161.4763 +/- 393.9341</td>
+<td>0.4131 +/- 0.4828</td>
+<td>-1.7984 +/- 1.6141</td>
+<td>0.5334 +/- 0.5858</td>
+<td>0.1434 +/- 0.2306</td>
+<td>40.6229 +/- 46.0145</td>
+<td>0.1293 +/- 0.0424</td>
+<td>61.4501 +/- 47.1386</td>
+<td>-3.5947 +/- 3.2283</td>
+<td>0.2259 +/- 0.7115</td>
+<td>3.4716 +/- 4.6529</td>
+<td>0.1339 +/- 0.3026</td>
+<td>0.4046 +/- 0.9869</td>
+<td>0.4528 +/- 0.1172</td>
+<td>1.6323 +/- 0.3213</td>
+<td>80.7958 +/- 149.5170</td>
+</tr>
+<tr>
+<td>1</td>
+<td>314.8664 +/- 193.3934</td>
+<td>0.7872 +/- 0.4835</td>
+<td>-0.4649 +/- 0.7411</td>
+<td>-0.0008 +/- 0.6113</td>
+<td>637.3349 +/- 644.2537</td>
+<td>1.1130 +/- 0.5954</td>
+<td>-0.0799 +/- 0.6864</td>
+<td>1.3811 +/- 0.6664</td>
+<td>0.4240 +/- 0.3105</td>
+<td>124.9629 +/- 84.0414</td>
+<td>0.1173 +/- 0.0311</td>
+<td>105.1171 +/- 23.1125</td>
+<td>-0.1575 +/- 1.3729</td>
+<td>0.1264 +/- 0.5343</td>
+<td>2.8377 +/- 4.0641</td>
+<td>0.6274 +/- 0.7294</td>
+<td>1.5969 +/- 1.6145</td>
+<td>0.4479 +/- 0.0817</td>
+<td>1.6076 +/- 0.2689</td>
+<td>271.5730 +/- 186.8849</td>
+</tr>
+</tbody>
+</table>
+<h2>Classification Results</h2>
+<ul>
+<li><strong>Classifier</strong>: see config</li>
+<li><strong>Cross-validation</strong>: Leave-One-Subject-Out (LOSO)</li>
+<li><strong>PCA</strong>: inside each fold (no data leakage)</li>
+<li><strong>Accuracy</strong>: 98.66% +/- 0.53%
+<img alt="Confusion Matrix" src="UCI_Physical_cm.png" /></li>
+</ul>
+<h2>Issues</h2>
+<p>None.</p></body></html>

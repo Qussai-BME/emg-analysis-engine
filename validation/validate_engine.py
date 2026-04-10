@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-validate_engine.py — v7.0
+validate_engine.py — v7.2
 
-Changes:
-  + Uses new evaluate_model() with configurable validation strategy.
-  + Passes train_ratio and random_state from config.
+Changes vs v7.1:
+  + Dataset-specific remove_class_zero support.
+  + process_dataset now accepts dataset_key to read per-dataset config.
+  + Main passes the correct dataset_key for each dataset.
 """
 
 import sys
@@ -21,17 +22,17 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 from validation.checkpoint       import Checkpoint
-from validation.data_loaders     import load_uci_gesture, load_ninapro_db7_custom, load_cemhsey
+from validation.data_loaders     import load_uci_gesture, load_ninapro_db7_custom, load_cemhsey, load_uci_physical_action
 from validation.process_engine   import extract_features_per_channel
 from validation.metrics          import evaluate_model, feature_statistics
 from validation.report_generator import generate_report
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="EMG Validation Suite v7.0")
-    parser.add_argument('--config',   type=str, default='config.yaml')
+    parser = argparse.ArgumentParser(description="EMG Validation Suite v7.2")
+    parser.add_argument('--config',   type=str, default='validation/config.yaml')
     parser.add_argument('--datasets', nargs='+',
-                        choices=['uci', 'ninapro_db7', 'cemhsey'], required=True)
+                        choices=['uci', 'ninapro_db7', 'cemhsey', 'uci_physical'], required=True)
     parser.add_argument('--quick',  action='store_true',
                         help='Process only first subject')
     parser.add_argument('--resume', action='store_true',
@@ -47,7 +48,8 @@ def load_config(path):
 def dataset_name_mapping(name):
     return {'UCI_Gesture': 'uci',
             'Ninapro_DB7': 'ninapro_db7',
-            'CEMHSEY':     'cemhsey'}.get(name, name)
+            'CEMHSEY':     'cemhsey',
+            'UCI_Physical': 'uci_physical'}.get(name, name)
 
 
 def get_loader_for_subject(dataset_name, data_path, subject_id, day=None):
@@ -58,6 +60,8 @@ def get_loader_for_subject(dataset_name, data_path, subject_id, day=None):
     elif dataset_name == 'CEMHSEY':
         return load_cemhsey(data_path, subjects=[subject_id],
                             days=[day] if day else None)
+    elif dataset_name == 'UCI_Physical':
+        return load_uci_physical_action(data_path, subjects=[subject_id])
     raise ValueError(f"Unknown dataset: {dataset_name}")
 
 
@@ -126,8 +130,17 @@ def process_one_subject(args):
         return {'subject_key': subject_key, 'success': False, 'error': str(e)}
 
 
-def process_dataset(loader_func, dataset_name, config,
+def process_dataset(loader_func, dataset_name, dataset_key, config,
                     checkpoint, quick=False, resume=False):
+    """
+    Process a single dataset.
+
+    Parameters
+    ----------
+    dataset_key : str
+        Key in config['datasets'] used to retrieve dataset-specific settings
+        (e.g., 'remove_class_zero').
+    """
     proc_config   = config['processing']
     output_dir    = config['output_dir']
     disable_cache = config.get('disable_cache', True)
@@ -148,7 +161,7 @@ def process_dataset(loader_func, dataset_name, config,
         if resume and not disable_cache and subject_key in processed_set:
             tqdm.write(f"[skip] {subject_key}")
             continue
-        data_path = config['datasets'][dataset_name_mapping(dataset_name)]['path']
+        data_path = config['datasets'][dataset_key]['path']
         tasks.append((
             subject_key, dataset_name, data_path,
             meta.get('day'), proc_config, cache_dir, disable_cache
@@ -194,9 +207,18 @@ def process_dataset(loader_func, dataset_name, config,
     y = np.hstack(all_labels)
     groups = np.hstack(all_groups)
 
-    if config.get('remove_class_zero', True):
+    # ---------- Dataset-specific remove_class_zero ----------
+    # 1. Check dataset-specific config under datasets[dataset_key]
+    dataset_cfg = config.get('datasets', {}).get(dataset_key, {})
+    remove_zero = dataset_cfg.get('remove_class_zero')
+    # 2. Fallback to global config key
+    if remove_zero is None:
+        remove_zero = config.get('remove_class_zero', True)
+    # 3. Apply filtering
+    if remove_zero:
         mask = y != 0
         X, y, groups = X[mask], y[mask], groups[mask]
+    # --------------------------------------------------------
 
     class_names = sorted(np.unique(y).tolist())
     feat_stats = feature_statistics(X, y, feat_names, max_features=30)
@@ -244,6 +266,7 @@ def main():
     args   = parse_args()
     config = load_config(args.config)
 
+    # Ensure ninapro_db7 entry exists if requested
     if 'ninapro_db7' in args.datasets and 'ninapro_db7' not in config.get('datasets', {}):
         config.setdefault('datasets', {})['ninapro_db7'] = {
             'path': r'E:\NinaProDB7',
@@ -261,7 +284,7 @@ def main():
         if ds_key == 'uci':
             path = config['datasets']['uci']['path']
             loader = load_uci_gesture(path, subjects=[1] if args.quick else None)
-            res = process_dataset(loader, 'UCI_Gesture', config, chk,
+            res = process_dataset(loader, 'UCI_Gesture', 'uci', config, chk,
                                    quick=args.quick, resume=args.resume)
             if res:
                 generate_report('UCI_Gesture', config['processing'], res, config['output_dir'])
@@ -269,7 +292,7 @@ def main():
         elif ds_key == 'ninapro_db7':
             path = config['datasets']['ninapro_db7']['path']
             loader = load_ninapro_db7_custom(path, subjects=[1] if args.quick else None)
-            res = process_dataset(loader, 'Ninapro_DB7', config, chk,
+            res = process_dataset(loader, 'Ninapro_DB7', 'ninapro_db7', config, chk,
                                    quick=args.quick, resume=args.resume)
             if res:
                 generate_report('Ninapro_DB7', config['processing'], res, config['output_dir'])
@@ -277,10 +300,18 @@ def main():
         elif ds_key == 'cemhsey':
             path = config['datasets'].get('cemhsey', {}).get('path', '')
             loader = load_cemhsey(path, subjects=[1] if args.quick else None)
-            res = process_dataset(loader, 'CEMHSEY', config, chk,
+            res = process_dataset(loader, 'CEMHSEY', 'cemhsey', config, chk,
                                    quick=args.quick, resume=args.resume)
             if res:
                 generate_report('CEMHSEY', config['processing'], res, config['output_dir'])
+
+        elif ds_key == 'uci_physical':
+            path = config['datasets']['uci_physical']['path']
+            loader = load_uci_physical_action(path, subjects=[1] if args.quick else None)
+            res = process_dataset(loader, 'UCI_Physical', 'uci_physical', config, chk,
+                                   quick=args.quick, resume=args.resume)
+            if res:
+                generate_report('UCI_Physical', config['processing'], res, config['output_dir'])
 
 
 if __name__ == '__main__':

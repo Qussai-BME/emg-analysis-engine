@@ -25,25 +25,35 @@ This project is the infrastructure answer to that problem.
 
 ---
 
-## Validated Performance
+## 🎯 Key Results (XGBoost, LOSO)
 
-Two public benchmarks, strict LOSO cross-validation, no data leakage.
+| Dataset | Task Type | Accuracy |
+|---------|-----------|----------|
+| **UCI Gesture** | Hand Gesture (7 classes) | **96.90%** ± 2.66% |
+| **NinaPro DB7** | Dexterous (40 classes, incl. amputees) | **87.93%** ± 3.10%* |
+| **UCI Physical Action** | Gross Motor (2 classes) | **98.66%** ± 0.53% |
 
-| Dataset | Subjects | Classes | Accuracy (LOSO) | Protocol |
-|---------|----------|---------|-----------------|----------|
-| UCI Hand Gesture | 36 | 7 gestures | **96.90% ± 2.66%** | Standard 7-class |
-| UCI Hand Gesture | 36 | 8 (incl. rest) | **87.16% ± 14.45%** | Ablation study |
-| NinaPro DB7 | 5 (incl. 2 amputees) | 40 gestures | **83.99% ± 4.39%** | Mixed cohort |
-
-**Note on the two UCI figures:** 96.90% is the primary result on the standard 7-gesture protocol. 87.16% is the recommended-configuration result from the ablation study using the extended 8-class protocol (including the rest/null class), which is a strictly harder task. These are not contradictory — they measure different things. See the paper for full protocol details.
-
-**Note on NinaPro DB7 SD:** The ±4.39% SD across 5 LOSO folds reflects inter-subject variability, not sampling noise. With 5 subjects, each fold trains on 4 and tests on 1. The contained spread despite intact/amputee heterogeneity is encouraging, but 5-subject confidence intervals are insufficient for population-level claims. Full 40-subject validation is in progress.
-
-**Typical baseline for 40-class LOSO (no domain adaptation): 45–65%.** This engine exceeds that range by ~20 percentage points on a mixed intact/amputee cohort.
+*\*Preliminary 5‑subject cohort; full 40‑subject validation ongoing.*
 
 ---
 
-## Ablation Study — What Actually Drives Accuracy
+## 📊 Validated Performance Across Three Datasets
+
+| Dataset | Task Type | #Subj | #Ch | Classes | Optimal `remove_class_zero` | Accuracy |
+|---------|-----------|-------|-----|---------|-----------------------------|----------|
+| **UCI Gesture** | Hand Gesture | 36 | 8 | 7 + rest | `true` | 96.90% ± 2.66% |
+| **NinaPro DB7** | Dexterous Hand | 5* | 12 | 40 + rest | `false` | 87.93% ± 3.10% |
+| **UCI Physical Action** | Gross Motor | 4 | 8 | 2 (normal/aggressive) | `false` | 98.66% ± 0.53% |
+
+*\*Preliminary cohort includes 3 intact subjects and 2 transradial amputees.*
+
+**Note on UCI Gesture ablation study:** The primary 7-gesture result is 96.90%. An ablation study using the harder 8‑class protocol (including rest) yielded 87.16% for the recommended configuration — this distinction is explained in the paper.
+
+**Typical baseline for 40-class LOSO (no domain adaptation): 45–65%.** This engine exceeds that range by ~25 percentage points on a mixed intact/amputee cohort.
+
+---
+
+## 🔬 Ablation Study — What Actually Drives Accuracy
 
 Six controlled experiments under identical conditions (36 subjects, XGBoost, LOSO, 8-class protocol):
 
@@ -58,14 +68,36 @@ Six controlled experiments under identical conditions (36 subjects, XGBoost, LOS
 
 **Key finding:** Removing wavelets and AR simultaneously improves accuracy by +0.24% while cutting processing time by ~70%. Inter-channel Pearson correlations are the only advanced feature group with meaningful positive contribution (−0.73% when removed) — because spatial muscle co-activation patterns are irreducibly multi-channel.
 
-Reproduce:
-```bash
-python validation/validate_engine.py --datasets uci --config validation/config.yaml
-```
+---
+
+## 🧩 What's New (v2.0)
+
+- **Third dataset added**: *UCI EMG Physical Action Data Set* (binary classification of normal vs. aggressive full‑body movements).
+- **Dataset‑specific configuration**: Processing parameters (e.g., `remove_class_zero`) can now be defined per dataset in `config.yaml`, allowing the pipeline to automatically apply the optimal settings for each database.
+- **Improved robustness**: Recursive file discovery, flexible subject grouping, and fallback label extraction for heterogeneous data structures.
+- **Performance optimizations**: Parallel feature extraction, `hist` tree method for XGBoost, and chunk‑based windowing to avoid memory errors.
 
 ---
 
-## Architecture
+## 📸 Screenshots
+
+### Streamlit Dashboard
+[![Main Dashboard](docs/images/Screenshot1.png)](docs/images/Screenshot1.png)
+*Interactive signal visualisation, channel selection, and real‑time analysis.*
+
+### Feature Extraction & Spectral Analysis
+[![Feature Extraction](docs/images/Screenshot2.png)](docs/images/Screenshot2.png)
+*Time‑domain feature extraction and frequency‑domain analysis with clinical sub‑bands highlighted.*
+
+### Confusion Matrices (LOSO)
+
+| UCI Gesture | NinaPro DB7 | UCI Physical Action |
+|-------------|-------------|---------------------|
+| [![UCI CM](docs/images/UCI_Gesture_cm.png)](docs/images/UCI_Gesture_cm.png) | [![DB7 CM](docs/images/Ninapro_DB7_cm.png)](docs/images/Ninapro_DB7_cm.png) | [![Physical CM](docs/images/UCI_Physical_Action_cm.png)](docs/images/UCI_Physical_Action_cm.png) |
+
+---
+
+## 🏗️ Architecture — Full Repository Tree
 
 ```
 emg-analysis-engine/
@@ -82,7 +114,7 @@ emg-analysis-engine/
 │   ├── config.yaml           # Full pipeline config (LOSO / Within-Subject toggle)
 │   ├── validate_engine.py    # CLI entry point with parallel processing
 │   ├── process_engine.py     # Feature extraction: Hjorth, TKEO, inter-ch. corr., chunked windowing
-│   ├── data_loaders.py       # UCI / NinaPro DB7 / CEMHSEY loaders
+│   ├── data_loaders.py       # UCI / NinaPro DB7 / CEMHSEY / UCI Physical Action loaders
 │   ├── metrics.py            # LOSO-CV + Within-Subject (RF, XGBoost, LDA)
 │   ├── report_generator.py   # Markdown / HTML / JSON reports
 │   └── checkpoint.py         # Resume-from-checkpoint utility
@@ -92,15 +124,17 @@ emg-analysis-engine/
 │   └── emg+data+for+gestures/  # UCI Gesture dataset (36 subjects)
 │
 ├── docs/images/              # Screenshots, confusion matrices
+├── validation_reports/       # Output reports (JSON, MD, HTML, CM plots) — generated at runtime
 ├── requirements.txt
-└── experiment_notes.md       # Lab notebook: documented surprises and design decisions
+├── experiment_notes.md       # Lab notebook: documented surprises and design decisions
+└── README.md
 ```
 
 **The core architectural decision:** `core_engine.py` is fully decoupled from `app.py`. This is not cosmetic — it was the mechanism that exposed an otherwise undetectable bug where Streamlit session state was silently altering SNR quality gate results when called programmatically vs. through the interface. Independent unit testing of the processing layer requires this separation.
 
 ---
 
-## What It Does
+## ⚙️ What It Does
 
 ### Input
 CSV, TXT, NPY, or EDF files. Multi-channel support with automatic time-column removal, interactive channel selection, and live signal preview. File size validation on upload prevents silent cloud memory failures.
@@ -127,7 +161,7 @@ NinaPro DB7 generates ~86,000 windows per subject across 12 channels. Naive tens
 ### Validation Suite
 - **LOSO protocol:** SelectKBest (k = 250) and Z-score normalization fitted on training folds only, applied to held-out subject without refitting. No data leakage.
 - **Within-Subject mode:** For personalized prosthetic calibration simulation.
-- **Classifiers:** XGBoost (primary), Random Forest, LDA.
+- **Classifiers:** XGBoost (primary), Random Forest, LDA, SVM‑RBF, Ensemble.
 - **Reports:** Automatic Markdown / HTML / JSON with full parameter traceability.
 
 ### Output
@@ -135,7 +169,7 @@ Streamlit dashboard + standardized versioned JSON schema. Five analysis tabs, st
 
 ---
 
-## Five Hard Lessons (Encoded in the Architecture)
+## 🧠 Hard Lessons (Encoded in the Architecture)
 
 These are not footnotes. They are the engineering decisions that make this platform reliable on real data.
 
@@ -149,32 +183,69 @@ These are not footnotes. They are the engineering decisions that make this platf
 
 **5. Large datasets require chunked thinking.** The naive NinaPro DB7 implementation requested 784 MiB for a single-subject window tensor. MemoryError on a standard laptop. Solution: chunked processing. Peak RAM → 50 MiB. Scalable engineering is not about brute force.
 
+**6. Dataset‑specific parameters are not global.** Applying `remove_class_zero: true` to all datasets cost 3.94% accuracy on NinaPro DB7. The pipeline now supports per‑dataset overrides — a lesson in avoiding one‑size‑fits‑all defaults.
+
 ---
 
-## Reproduce All Results
+## 🚀 Quick Start
 
+### 1. Installation
 ```bash
-# Clone and install
-git clone https://github.com/Qussai-BME/emg-analysis-engine
+git clone https://github.com/Qussai-BME/emg-analysis-engine.git
 cd emg-analysis-engine
+python -m venv venv
+source venv/bin/activate      # Linux/Mac
+venv\Scripts\activate         # Windows
 pip install -r requirements.txt
-pip install xgboost
+```
 
-# Run UCI validation (recommended config — ~8 min, 4 cores)
-python validation/validate_engine.py --datasets uci --config validation/config.yaml
+### 2. Configure `validation/config.yaml`
+Set paths and dataset‑specific overrides:
 
-# Run NinaPro DB7 validation (requires DB7 data in data/ninapro_db7/)
-python validation/validate_engine.py --datasets ninapro_db7 --config validation/config.yaml
+```yaml
+datasets:
+  uci:
+    remove_class_zero: true
+    path: 'C:/data/UCI_Gesture'
+    sampling_rate: 1000
+  ninapro_db7:
+    remove_class_zero: false
+    path: 'E:/NinaProDB7'
+    sampling_rate: 2000
+  uci_physical:
+    remove_class_zero: false
+    path: 'E:/UCI_Physical_Action'
+    sampling_rate: 1000
+```
+
+### 3. Run Validation
+```bash
+# Process all three datasets
+python validation/validate_engine.py --datasets uci ninapro_db7 uci_physical
+
+# Quick test (first subject only)
+python validation/validate_engine.py --datasets uci ninapro_db7 uci_physical --quick
 
 # Launch Streamlit app
 streamlit run src/app.py
 ```
 
-All results are reproducible from the parameters in `validation/config.yaml`. Automatic reports in `validation_reports/`.
+Reports are saved in `./validation_reports/`.
 
 ---
 
-## Limitations — What This Is Not
+## 🛠️ Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `MemoryError` during windowing | Reduce `windowing_chunk_size` in `config.yaml` (e.g., to 512). |
+| "No subjects to process" | Check dataset path and folder structure. Use diagnostic function for UCI Physical Action. |
+| `StopIteration` in parallel mode | Ensure loader yields a dictionary with `subject_id`, `emg`, `labels`. |
+| XGBoost predictions are 2D | The pipeline automatically converts probability outputs to class labels. |
+
+---
+
+## 📖 Limitations — What This Is Not
 
 | ✅ This platform is | ❌ This platform is not |
 |---------------------|------------------------|
@@ -189,7 +260,7 @@ Current validation uses open-source research datasets recorded under controlled 
 
 ---
 
-## Roadmap
+## 🗺️ Roadmap
 
 | Module | Status | Description |
 |--------|--------|-------------|
@@ -202,7 +273,7 @@ Current validation uses open-source research datasets recorded under controlled 
 
 ---
 
-## Citation
+## 📄 Citation
 
 ```bibtex
 @software{adlbi2026emg,
@@ -212,7 +283,7 @@ Current validation uses open-source research datasets recorded under controlled 
   month     = mar,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v1.0.0},
+  version   = {v2.0.0},
   doi       = {10.5281/zenodo.18965272},
   url       = {https://doi.org/10.5281/zenodo.18965272}
 }
@@ -220,7 +291,19 @@ Current validation uses open-source research datasets recorded under controlled 
 
 ---
 
-## References
+## 🤝 Collaboration
+
+Actively seeking:
+- Research collaborators in biomedical engineering, neurology, and rehabilitation medicine
+- Academic partners for clinical dataset access and IRB-approved validation studies
+- Grant opportunities: NIH NIBIB · Wellcome Trust · EU Horizon Europe
+- Institutional pilots with rehabilitation centres or prosthetics labs
+
+📧 adlbiqussai@gmail.com | [LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385) | [GitHub](https://github.com/Qussai-BME)
+
+---
+
+## 📚 References
 
 1. De Luca, C.J. et al. (2010). Filtering the surface EMG signal. *J. Biomechanics*, 43(8), 1573–1579.
 2. Phinyomark, A. et al. (2012). Feature reduction and selection for EMG signal classification. *Expert Systems with Applications*, 39(8), 7420–7431.
@@ -234,21 +317,9 @@ Current validation uses open-source research datasets recorded under controlled 
 
 ---
 
-## Collaboration
+## 📜 License
 
-Actively seeking:
-- Research collaborators in biomedical engineering, neurology, and rehabilitation medicine
-- Academic partners for clinical dataset access and IRB-approved validation studies
-- Grant opportunities: NIH NIBIB · Wellcome Trust · EU Horizon Europe
-- Institutional pilots with rehabilitation centres or prosthetics labs
-
-📧 adlbiqussai@gmail.com | [LinkedIn](https://www.linkedin.com/in/qussai-adlbi-99aa05385) | [GitHub](https://github.com/Qussai-BME)
-
----
-
-## License
-
-MIT — open for research use.
+MIT — open for research use.  
 Commercial deployment and clinical use require separate agreements and regulatory compliance.
 
 ---

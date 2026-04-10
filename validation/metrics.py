@@ -242,6 +242,9 @@ def _train_and_evaluate(Xtr, ytr, Xte, yte, le,
             )
             clf.fit(Xtr, ytr_enc)
             yp_enc = clf.predict(Xte)
+            # Ensure yp_enc is 1d labels, not 2d probabilities
+            if yp_enc.ndim == 2:
+                yp_enc = np.argmax(yp_enc, axis=1)
             yp = le.inverse_transform(yp_enc)
 
     elif clf_name == 'ENSEMBLE':
@@ -285,6 +288,13 @@ def _train_and_evaluate(Xtr, ytr, Xte, yte, le,
                   class_weight=class_weight, probability=False)
         clf.fit(Xtr, ytr)
         yp = clf.predict(Xte)
+
+    # Safety check: if yp is 2D (e.g., probabilities), convert to 1D labels
+    if yp.ndim == 2:
+        if yp.shape[1] > 1:
+            yp = np.argmax(yp, axis=1)
+        else:
+            yp = yp.ravel()
 
     acc = accuracy_score(yte, yp)
     return acc, yp

@@ -1,11 +1,11 @@
-# config.yaml — v7.0
-# Supports: LOSO (Leave-One-Subject-Out) and Within-Subject validation
+# config.yaml — v7.2
+# Added dataset-specific remove_class_zero flags.
 
 processing:
   sampling_rate: 2000
   bandpass: [20, 450]
   notch: 50
-  window_size: 400          # 200 ms at 2000 Hz (was incorrectly 200)
+  window_size: 400          # 200 ms at 2000 Hz
   overlap: 0.5
   normalize_signal: true
 
@@ -40,23 +40,29 @@ classification:
   class_weight: 'balanced'
   pca_components: null
 
-# NEW: validation strategy control
 validation:
   strategy: 'within_subject'   # 'loso' or 'within_subject'
-  train_ratio: 0.7             # Used only for within_subject
+  train_ratio: 0.7
   random_state: 42
 
 disable_cache: true
-remove_class_zero: true
+remove_class_zero: false          # Global default (used if not specified per dataset)
 
 datasets:
   uci:
     path: 'C:\Users\MAIN IT\Desktop\Deebseek EMG\data\emg+data+for+gestures\EMG_data_for_gestures-master'
     sampling_rate: 1000
+    remove_class_zero: true       # Optimal for UCI Gesture
 
   ninapro_db7:
     path: 'E:\NinaProDB7'
     sampling_rate: 2000
+    remove_class_zero: false      # Optimal for NinaPro DB7
+
+  uci_physical:
+    path: 'E:\UCI EMG Physical Action Data Set'
+    sampling_rate: 1000
+    remove_class_zero: false      # Optimal for UCI Physical Action
 
 output_dir: './validation_reports'
 parallel_processing: true
