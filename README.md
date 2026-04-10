@@ -255,4 +255,3 @@ Commercial deployment and clinical use require separate agreements and regulator
 
 *Built at the intersection of signal processing, clinical need, and the stubborn belief that good science should be accessible.*  
 *This is not the final version. It is the right foundation.*
-```
