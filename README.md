@@ -93,7 +93,7 @@ Six controlled experiments under identical conditions (36 subjects, XGBoost, LOS
 
 | UCI Gesture | NinaPro DB7 | UCI Physical Action |
 |-------------|-------------|---------------------|
-| [![UCI CM](docs/images/UCI_Gesture_cm.png)](docs/images/UCI_Gesture_cm.png) | [![DB7 CM](docs/images/Ninapro_DB7_cm.png)](docs/images/Ninapro_DB7_cm.png) | [![Physical CM](docs/images/UCI_Physical_Action_cm.png)](docs/images/UCI_Physical_Action_cm.png) |
+| [![UCI CM](docs/images/UCI_Gesture_cm.png)](docs/images/UCI_Gesture_cm.png) | [![DB7 CM](validation_reports/Ninapro_DB7_cm.png)](validation_reports/Ninapro_DB7_cm.png) | [![Physical CM](validation_reports/UCI_Gesture_cm.png)](validation_reports/UCI_Gesture_cm.png) |
 
 ---
 
