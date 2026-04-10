@@ -1,10 +1,9 @@
 """
-data_loaders.py  — v4
+data_loaders.py  — v5
 
-Changes vs v3:
-  ✓ Replaced deprecated delim_whitespace=True with sep=r'\s+'
-  ✓ Added engine='python' for regex separator (avoids ParserWarning)
-  ✓ Minor robustness: explicit dtype on CSV reads
+Changes vs v4:
+  + Added custom Ninapro DB7 loader (load_ninapro_db7_custom) for actual file structure.
+  + Handles both v7.2 and v7.3 .mat files.
 """
 
 import os
@@ -164,6 +163,94 @@ def load_ninapro_db7(data_path, subjects=None):
             'n_channels':    emg.shape[1],
             'n_samples':     emg.shape[0]
         }
+
+
+def load_ninapro_db7_custom(root_path, subjects=None):
+    """
+    Custom loader for NinaPro DB7 based on actual file structure.
+    
+    Expected structure:
+        root_path/
+            Subject_1/
+                S1_E1_A1.mat
+                S1_E2_A1.mat
+            Subject_2/
+                ...
+    
+    Each .mat file contains:
+        'emg'        : (n_samples, 12) EMG channels
+        'restimulus' : (n_samples, 1) gesture labels (0 = rest, 1..41 = gestures)
+    Sampling rate defaults to 2000 Hz (DB7 standard).
+    """
+    if not os.path.exists(root_path):
+        raise FileNotFoundError(f"Path not found: {root_path}")
+
+    # Find all subject folders (directories) inside root_path
+    subject_folders = [
+        d for d in os.listdir(root_path)
+        if os.path.isdir(os.path.join(root_path, d))
+    ]
+    if subjects is not None:
+        # Filter subjects if a list of subject IDs is provided
+        subject_folders = [
+            sf for sf in subject_folders
+            if any(str(s).lower() in sf.lower() for s in subjects)
+        ]
+
+    for subj_folder in sorted(subject_folders):
+        subj_path = os.path.join(root_path, subj_folder)
+        mat_files = [
+            f for f in os.listdir(subj_path)
+            if f.endswith('.mat')
+        ]
+
+        emg_list = []
+        labels_list = []
+        fs = 2000   # Default for DB7
+
+        for mat_file in sorted(mat_files):
+            mat_path = os.path.join(subj_path, mat_file)
+            try:
+                # Attempt loading with scipy.io (works for v7.2 and earlier)
+                data = loadmat(mat_path)
+                emg = data['emg'].astype(np.float64)
+                labels = data['restimulus'].squeeze().astype(np.int32)
+
+                # If sampling frequency exists, use it
+                if 'sampling_frequency' in data:
+                    fs = int(data['sampling_frequency'].item())
+            except (NotImplementedError, TypeError):
+                # Fallback for MATLAB v7.3 files (HDF5)
+                import h5py
+                with h5py.File(mat_path, 'r') as f:
+                    emg = np.array(f['emg']).T
+                    if emg.ndim == 2 and emg.shape[0] < emg.shape[1]:
+                        emg = emg.T
+                    labels = np.array(f['restimulus']).squeeze()
+                    if 'sampling_frequency' in f:
+                        fs = int(np.array(f['sampling_frequency']).item())
+                emg = emg.astype(np.float64)
+                labels = labels.astype(np.int32)
+            except Exception as e:
+                warnings.warn(f"Failed to load {mat_file} in {subj_folder}: {e}")
+                continue
+
+            emg_list.append(emg)
+            labels_list.append(labels)
+
+        if emg_list:
+            # Concatenate all data from this subject
+            emg_combined = np.vstack(emg_list)
+            labels_combined = np.hstack(labels_list)
+            metadata = {
+                'dataset': 'Ninapro DB7 (custom)',
+                'subject': subj_folder,
+                'sampling_rate': fs,
+                'n_channels': emg_combined.shape[1],
+                'n_samples': emg_combined.shape[0],
+                'files_processed': len(mat_files)
+            }
+            yield emg_combined, labels_combined, metadata
 
 
 def load_cemhsey(data_path, subjects=None, days=None):

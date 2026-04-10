@@ -1,45 +1,52 @@
-# config.yaml  — v6.1
+# config.yaml — v7.0
+# Supports: LOSO (Leave-One-Subject-Out) and Within-Subject validation
 
 processing:
-  sampling_rate: 1000
+  sampling_rate: 2000
   bandpass: [20, 450]
   notch: 50
-  window_size: 200
+  window_size: 400          # 200 ms at 2000 Hz (was incorrectly 200)
   overlap: 0.5
   normalize_signal: true
+
   compute_ar: false
   ar_order: 6
   compute_hjorth: true
   compute_inter_channel_corr: true
+
   compute_wavelet: false
   wavelet_name: 'db4'
   wavelet_level: 4
-  compute_freq_features: true
+
+  compute_freq_features: false
   compute_spectral_rolloff: false
   fft_pad_to_power_of_two: true
   compute_extra_stats: true
   compute_spectral_centroid: false
   use_sliding_window: true
-  ssc_threshold: 0.0
+  ssc_threshold: 0.05
+
   subsample_every_n: 1
+  windowing_chunk_size: 1024   # Adjust based on RAM
 
 classification:
   classifier: 'XGBoost'
-  n_estimators: 300
-  n_top_features: 150
-  feature_selection: 'f_classif'
+  n_estimators: 200
+  n_top_features: 250
+  feature_selection: 'f_classif'   # 'mutual_info' is slower but more accurate
   use_grid_search: false
   svm_c: 1.0
   svm_gamma: 'scale'
   class_weight: 'balanced'
   pca_components: null
 
-# ── Key fix: no disk writes during parallel processing ──────
-# Eliminates "0 bytes written" / "No space left on device" errors.
-# All features stay in RAM (~126 MB for UCI, safe for any modern PC).
-# Set false only for huge datasets (CEMHSEY) where RAM is a concern.
-disable_cache: true
+# NEW: validation strategy control
+validation:
+  strategy: 'within_subject'   # 'loso' or 'within_subject'
+  train_ratio: 0.7             # Used only for within_subject
+  random_state: 42
 
+disable_cache: true
 remove_class_zero: true
 
 datasets:
@@ -47,6 +54,10 @@ datasets:
     path: 'C:\Users\MAIN IT\Desktop\Deebseek EMG\data\emg+data+for+gestures\EMG_data_for_gestures-master'
     sampling_rate: 1000
 
+  ninapro_db7:
+    path: 'E:\NinaProDB7'
+    sampling_rate: 2000
+
 output_dir: './validation_reports'
 parallel_processing: true
-n_jobs: 4
+n_jobs: 3
