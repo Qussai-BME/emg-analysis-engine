@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-05-07T17:52:09.647999",
+  "version": "7.0",
+  "num_kernels": 1000,
+  "max_train": 15000,
+  "normalized": true,
+  "adaptation": "CORAL",
+  "grouped": true,
+  "datasets": [
+    "ninapro_db3"
+  ],
+  "subjects_filter": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "results": {
+    "ninapro_db3": {
+      "mean_accuracy": 0.20935076374190068,
+      "std_accuracy": 0.001246421882015792,
+      "per_subject_accuracy": [
+        {
+          "subject_id": 1,
+          "accuracy": 0.2105716748060902,
+          "n_train": 9904,
+          "n_test": 3481
+        },
+        {
+          "subject_id": 2,
+          "accuracy": 0.2093673540720028,
+          "n_train": 10524,
+          "n_test": 2861
+        },
+        {
+          "subject_id": 3,
+          "accuracy": 0.20982839313572543,
+          "n_train": 10821,
+          "n_test": 2564
+        },
+        {
+          "subject_id": 4,
+          "accuracy": 0.20763563295378432,
+          "n_train": 8906,
+          "n_test": 4479
+        }
+      ]
+    }
+  }
+}

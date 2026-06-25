@@ -7,3 +7,15 @@ notebooks/
 .DS_Store
 Thumbs.db
 results/
+__pycache__/
+*.pyc
+venv/
+.venv/
+.idea/
+.vscode/
+.DS_Store
+*.mat
+data/raw/
+checkpoint/*.pt
+checkpoint/*.pth
+*.tmp

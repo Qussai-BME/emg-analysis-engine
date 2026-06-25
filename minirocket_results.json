@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-05-07T15:52:21.108765",
+  "classifier": "MiniROCKET+Ridge (v6.0 per-window-norm)",
+  "version": "6.0",
+  "num_kernels": 1000,
+  "max_train_samples": 15000,
+  "normalized": true,
+  "grouped": true,
+  "datasets": [
+    "ninapro_db3"
+  ],
+  "subjects_filter": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "results": {
+    "ninapro_db3": {
+      "mean_accuracy": 0.17645572322977876,
+      "std_accuracy": 0.002915181164252751,
+      "per_subject_accuracy": [
+        {
+          "subject_id": 1,
+          "accuracy": 0.17897155989658145,
+          "n_train": 9904,
+          "n_test": 3481
+        },
+        {
+          "subject_id": 2,
+          "accuracy": 0.1754631247815449,
+          "n_train": 10524,
+          "n_test": 2861
+        },
+        {
+          "subject_id": 3,
+          "accuracy": 0.17277691107644305,
+          "n_train": 10821,
+          "n_test": 2564
+        },
+        {
+          "subject_id": 4,
+          "accuracy": 0.17861129716454566,
+          "n_train": 8906,
+          "n_test": 4479
+        }
+      ]
+    }
+  }
+}
